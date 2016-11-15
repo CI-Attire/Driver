@@ -1,0 +1,31 @@
+{
+    "name": "attire/driver",
+    "type": "codeigniter-library",
+    "description": "Attire Driver is an implementation of Twig template engine for CodeIgniter",
+    "require": {
+        "php": ">=5.2.4",
+        "composer/installers": "^1.2",
+        "twig/twig": "^1.27"
+    },
+    "require-dev": {
+        "codeigniter/framework": "^3.1"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "David Sosa Valdes",
+            "email": "david.sosa.valdes@github.com"
+        }
+    ],
+    "autoload": {
+      "psr-4": {
+        "Attire\\": "src/"
+      }
+    },
+    "extra": {
+      "branch-alias": {
+        "dev-master": "4.0.x-dev"
+      },
+      "installer-name": "attire"
+    }
+}
