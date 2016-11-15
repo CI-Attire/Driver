@@ -6,9 +6,8 @@ namespace Attire\Driver;
  */
 class Filter extends \Twig_Filter
 {
-
-  function __construct()
-  {
-    # code...
-  }
+  // function __construct()
+  // {
+  //   # code...
+  // }
 }
