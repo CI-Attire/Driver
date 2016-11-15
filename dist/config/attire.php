@@ -9,7 +9,8 @@
 |
 */
 $config['loader'] = [
-	'paths' => [ VIEWPATH ]
+	'paths' 		=> ['views/'],
+	'file_ext'  => '.twig',
 ];
 
 /*
