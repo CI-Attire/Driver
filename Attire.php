@@ -97,6 +97,13 @@ class Attire
       if (isset($options['environment']))
       {
         $this->environment = new Environment($this->loader, $options['environment']);
+        if (extract(self::intersect('debug', $options['environment'])))
+        {
+          if ($debug !== FALSE)
+          {
+            $this->environment->addExtension(new \Twig_Extension_Debug());
+          }
+        }
       }
 
       if (isset($options['lexer']))
