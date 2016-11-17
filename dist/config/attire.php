@@ -15,6 +15,20 @@ $config['loader'] = [
 
 /*
 |--------------------------------------------------------------------------
+| Theme
+|--------------------------------------------------------------------------
+|
+| Here you may specify the directory path to your attire themes folder.
+| Typically, it will be within your application path.
+|
+*/
+$config['theme'] = [
+	'name' => 'attire',
+	'path' => 'themes/'
+];
+
+/*
+|--------------------------------------------------------------------------
 | Environment
 |--------------------------------------------------------------------------
 |
@@ -55,22 +69,6 @@ $config['environment'] = [
 | ];
 */
 $config['lexer'] = NULL;
-
-/*
-|--------------------------------------------------------------------------
-| Theme
-|--------------------------------------------------------------------------
-|
-| Here you may specify the directory path to your attire themes folder.
-| Typically, it will be within your application path.
-|
-*/
-$config['theme'] = [
-	'name'     => 'attire',
-	'template' => 'master',
-	'layout'   => 'layouts/default',
-	'path'     => APPPATH.'themes/'
-];
 
 /*
 |--------------------------------------------------------------------------
