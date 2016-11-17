@@ -2,7 +2,7 @@
 namespace Attire\Traits\File;
 
 /**
- * Attire File Class
+ * Attire File Extension Trait
  *
  * @package    Attire
  * @subpackage Drivers
@@ -16,7 +16,7 @@ trait Extension
 	 * File extension
 	 * @var string
 	 */
-	private $ext = '.twig';
+	private static $ext = '.twig';
 
 	/**
 	 * Check if file have extension
@@ -24,11 +24,11 @@ trait Extension
 	 * @param  string  $file Filename
 	 * @return boolean       TRUE if the file have extension defined and is valid else FALSE
 	 */
-	public function haveExt($file)
+	public static function haveExtension($file)
 	{
 		$info = new \SplFileInfo($file);
 		$ext = $info->getExtension();
-		return (! empty($ext)); #&& $this->isValidExt($ext);
+		return (! empty($ext));
 	}
 
 	/**
@@ -37,7 +37,7 @@ trait Extension
 	 * @param  string  $ext File extension
 	 * @return boolean      TRUE if is valid
 	 */
-	public function isValidExt($ext)
+	public static function isValidFileExtension($ext)
 	{
 		return preg_match('/^.*\.(twig|php|php.twig|html|html.twig)$/i', $ext);
 	}
@@ -47,9 +47,9 @@ trait Extension
 	 *
 	 * @param string $ext Set it if is valid
 	 */
-	public function setFileExt($ext)
+	public static function setFileExtension($ext)
 	{
-		return $this->isValidExt($ext) && $this->ext = $ext;
+		return self::isValidFileExtension($ext) && self::$ext = $ext;
 	}
 
 	/**
@@ -57,9 +57,9 @@ trait Extension
 	 *
 	 * @return string File extension
 	 */
-	public function getFileExt()
+	public static function getFileExtension()
 	{
-		return $this->ext;
+		return self::$ext;
 	}
 }
 
