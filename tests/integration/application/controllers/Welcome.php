@@ -21,6 +21,7 @@ class Welcome extends CI_Controller {
 	public function index()
 	{
 		$this->load->library('attire');
+		$this->attire->render('attire/helloworld');
 		$this->output->enable_profiler(TRUE);
 	}
 }
