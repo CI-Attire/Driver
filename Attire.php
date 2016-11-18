@@ -23,7 +23,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  use Attire\Driver\Loader;
  use Attire\Driver\Theme;
  use Attire\Driver\Views;
- use Symfony\Component\Yaml\Yaml;
 
 /**
  * CodeIgniter Attire
@@ -83,8 +82,6 @@ class Attire
     {
       $this->CI =& get_instance();
 
-      empty($options) && $options = Yaml::parse(file_get_contents(APPPATH.'config/attire.yml'));
-
       if (isset($options['loader']))
       {
         extract(self::intersect('paths','file_ext','root_path', $options['loader']));
@@ -134,7 +131,7 @@ class Attire
       {
         is_string($key)
           && $this->views->add($key, $value)
-          || $this->views->add($value);
+          || $this->views->add($value, $params);
       }
 
       if ($this->theme !== NULL)
@@ -217,7 +214,7 @@ class Attire
   /**
   * Show the possible exception in the output
   *
-  * @param  \Exception $e
+  * @param \Error $e
   */
   private function _showError($e)
   {
