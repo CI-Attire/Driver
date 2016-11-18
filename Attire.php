@@ -23,6 +23,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  use Attire\Driver\Loader;
  use Attire\Driver\Theme;
  use Attire\Driver\Views;
+ use Symfony\Component\Yaml\Yaml;
 
 /**
  * CodeIgniter Attire
@@ -82,28 +83,25 @@ class Attire
     {
       $this->CI =& get_instance();
 
+      empty($options) && $options = Yaml::parse(file_get_contents(APPPATH.'config/attire.yml'));
+
       if (isset($options['loader']))
       {
-        extract(self::intersect('paths','file_ext','root_path', $options['loader']))
-          && $this->loader = new Loader($paths, $file_ext, $root_path);
+        extract(self::intersect('paths','file_ext','root_path', $options['loader']));
+        $this->loader = new Loader($paths, $file_ext, $root_path);
       }
 
       if (isset($options['theme']))
       {
-        extract(self::intersect('name','path','template','layout', $options['theme']))
-          && $this->theme = new Theme($name, $path, $template, $layout);
+        extract(self::intersect('name','path','template','layout', $options['theme']));
+        $this->theme = new Theme($name, $path, $template, $layout);
       }
 
       if (isset($options['environment']))
       {
         $this->environment = new Environment($this->loader, $options['environment']);
-        if (extract(self::intersect('debug', $options['environment'])))
-        {
-          if ($debug !== FALSE)
-          {
-            $this->environment->addExtension(new \Twig_Extension_Debug());
-          }
-        }
+        extract(self::intersect('debug', $options['environment']));
+        $debug && $this->environment->addExtension(new \Twig_Extension_Debug());
       }
 
       if (isset($options['lexer']))
@@ -117,7 +115,6 @@ class Attire
     {
       $this->_showError($e);
     }
-
   }
 
   /**
@@ -165,6 +162,13 @@ class Attire
 
   }
 
+  /**
+   * Intersect the values of an array based on some variables predecesors,
+   * if a variable is not defined inside the array then his value should be null.
+   *
+   * @param  array $params  ...
+   * @return array          The array intersected
+   */
   private static function intersect(...$params)
   {
     $options = array_pop($params);
@@ -175,7 +179,14 @@ class Attire
     return array_intersect_key($options, array_flip($params));
   }
 
-  public function __call($method, $params)
+  /**
+   * Intersect the values of an array based on some variables predecesors,
+   * if a variable is not defined inside the array then his value should be null.
+   *
+   * @param  string $method  ...
+   * @param  array  $params  ...
+   */
+  public function __call($method, array $params)
   {
     $prefix = substr($method, 0, 3);
     if ($prefix == 'set')
