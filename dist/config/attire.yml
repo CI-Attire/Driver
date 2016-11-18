@@ -1,0 +1,21 @@
+loader:
+  paths:
+    'views/'
+  file_ext: '.twig'
+theme:
+  name: 'attire'
+  path: 'themes/'
+environment:
+  charset: 'UTF-8'
+  base_template_class: 'Twig_Template'
+  cache: false
+  auto_reload: false
+  strict_variables: false
+  autoescape: 'html'
+  debug: false
+lexer: null
+assets:
+  base_path: 'assets/'
+  scripts: 'scripts/'
+  styles: 'styles/'
+  images: 'img/'
