@@ -156,7 +156,6 @@ class Attire
     {
       $this->_showError($e);
     }
-
   }
 
   /**
@@ -220,7 +219,7 @@ class Attire
   {
     if (is_cli()) { throw $e; }
     list($trace) = $e->getTrace();
-    $message     = "Exception: ".$trace['class']." with the message:<br>&emsp;".$e->getMessage();
+    $message = "Exception: ".$trace['class']." with the message:<br>&emsp;".$e->getMessage();
     return show_error($message, 500, 'Attire error');
   }
 }
