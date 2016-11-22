@@ -23,6 +23,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  use Attire\Driver\Loader;
  use Attire\Driver\Theme;
  use Attire\Driver\Views;
+ use Attire\Driver\AssetManager;
 
 /**
  * CodeIgniter Attire
@@ -72,6 +73,11 @@ class Attire
   private $views;
 
   /**
+   * @var \Attire\Driver\AssetManager
+   */
+  private $assetManager;
+
+  /**
    * Class constructor
    *
    * @param array $config library params
@@ -106,7 +112,13 @@ class Attire
         $this->lexer = new Lexer($this->environment, $options['lexer']);
       }
 
+      if (isset($options['assets']))
+      {
+        $this->assetManager = new AssetManager($options['assets']);
+      }
+
       $this->views = new Views();
+
     }
     catch (\TypeError $e)
     {
@@ -126,6 +138,8 @@ class Attire
     try
     {
       $this->CI->benchmark->mark('Attire Render Time_start');
+
+      $this->environment->addGlobal('attire', $this->assetManager);
 
       foreach ((array) $views as $key => $value)
       {
