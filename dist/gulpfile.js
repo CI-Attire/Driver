@@ -16,10 +16,10 @@ module.exports = require('gulp-module').define('attire', function (gulp, runSequ
 
 	// Watch Task
   // TODO: Redefine this task
-	// gulp.task('watch', function() {
-	// 	gulp.watch(config.paths.js + '/**/*.js', {cwd: config.paths.assets}, ['reload']);
-	// 	gulp.watch(options.stylesPath + '/**/*.+{css|scss|sass}', {cwd: config.paths.assets}, ['reload']);
-	// });
+	gulp.task('watch', function() {
+		gulp.watch(config.paths.js + '/**/*.js', {cwd: config.paths.assets}, ['reload']);
+		gulp.watch(options.stylesPath + '/**/*.+{css|scss|sass}', {cwd: config.paths.assets}, ['reload']);
+	});
 
 	gulp.task('serve', ['compile'], function() {
 		php.server({ base: config.paths.root, port: 8010, keepalive: true});
