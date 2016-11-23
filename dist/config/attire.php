@@ -5,7 +5,10 @@
 | Loader
 |--------------------------------------------------------------------------
 |
-| Loaders are responsible for loading templates from a resource
+| Loaders are responsible for loading templates from a resource.
+|
+| Here you may specify the directory paths to your stored views (relative
+| to your application path).
 |
 */
 $config['loader'] = [
@@ -18,8 +21,8 @@ $config['loader'] = [
 | Theme
 |--------------------------------------------------------------------------
 |
-| Here you may specify the directory path to your attire themes folder.
-| Typically, it will be within your application path.
+| Here you may specify the directory path to your stored themes (relative
+| to your application path).
 |
 */
 $config['theme'] = [
@@ -55,10 +58,18 @@ $config['environment'] = [
 
 /*
 |--------------------------------------------------------------------------
-| Assets
+| Asset Manager
 |--------------------------------------------------------------------------
 |
-| Path to the assets config file.
+| Path to the assets defined with a simple key. Example:
+|
+| JSON file:
+| 	$config['assets'] = 'attire.config.json' (relative to the root path)
+|
+| Array:
+| 	$config['assets'] = [
+|			'bootstrap.min.css' => './bower/<bootstrap/dist/css/bootstrap.min.css'
+| 	];
 |
 */
 $config['assets'] = 'attire.config.json';
@@ -89,11 +100,10 @@ $config['lexer'] = NULL;
 | from other libraries or helpers.
 |
 | Example:
-|
 | 	$config['functions'] = array(
-|		'base_url' => function($path = ""){
-|			return base_url($path);
-|		},
+|			'base_url' => function($path = ""){
+|				return base_url($path);
+|			},
 | 	);
 |
 | Call the functions in Twig environment:
@@ -138,9 +148,9 @@ $config['globals'] = [];
 | Example:
 |
 | 	$config['filters'] = array(
-|		'base_url' => function($path = ""){
-|			return base_url($path);
-|		},
+|			'base_url' => function($path = ""){
+|				return base_url($path);
+|			},
 | 	);
 |
 | Call the functions in the template:
