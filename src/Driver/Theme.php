@@ -79,6 +79,11 @@ class Theme
       ->setLayout($layout);
   }
 
+  public function getNamespace()
+  {
+    return self::MAIN_NAMESPACE;
+  }
+
   /**
    * Get the theme name
    *

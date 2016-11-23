@@ -15,6 +15,7 @@ namespace Attire\Driver;
  * @since     Version 1.0.0
  */
 
+use Attire\Driver\Theme;
 
 /**
  * Attire AssetManager
@@ -25,33 +26,28 @@ namespace Attire\Driver;
  * @author     David Sosa Valdes
  * @link       https://github.com/davidsosavaldes/Attire
  */
-class AssetManager
+class AssetManager extends \Twig_SimpleFunction
 {
   private $config;
 
   /**
    * Class constructor
    *
-   * @param ---
+   * @param {Theme}        $theme     \Attire\Driver\Theme instance
+   * @param {string|array} $args      A set of defined asset paths or the file that contains this paths.
    */
-  public function __construct($file_path)
+  public function __construct(Theme $theme, $args)
   {
-    if (file_exists($file_path))
+    if (is_array($args))
     {
-      $string = file_get_contents($file_path);
-      $this->config = json_decode($string);
+      $this->config = $args;
     }
-  }
-
-  public function __call($method, array $args = [])
-  {
-    switch ($method) {
-      case 'script':
-      case 'style':
-        @list($name) = $args;
-        is_null($name) && $name = 'main';
-        return key_exists($this->config, $name)? $this->config->{$name}->styles : NULL;
+    elseif (file_exists($file = $args) || file_exists(($file = $theme->getPath().'/'.$file)))
+    {
+      $this->config = json_decode(file_get_contents($file), TRUE);
     }
-    throw new \BadMethodCallException("The method '$method' does not exist");
+    parent::__construct('attire', function($filename) {
+      return key_exists($filename, $this->config)? $this->config[$filename] : NULL;
+    });
   }
 }

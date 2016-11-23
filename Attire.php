@@ -75,7 +75,7 @@ class Attire
   /**
    * @var \Attire\Driver\AssetManager
    */
-  private $assetManager;
+  public $assetManager;
 
   /**
    * Class constructor
@@ -92,33 +92,33 @@ class Attire
       {
         extract(self::intersect('paths','file_ext','root_path', $options['loader']));
         $this->loader = new Loader($paths, $file_ext, $root_path);
+
+        if (isset($options['environment']))
+        {
+          $this->environment = new Environment($this->loader, $options['environment']);
+
+          extract(self::intersect('debug', $options['environment']));
+          $debug && $this->environment->addExtension(new \Twig_Extension_Debug());
+
+          if (isset($options['lexer']))
+          {
+            $this->lexer = new Lexer($this->environment, $options['lexer']);
+          }
+        }
       }
 
       if (isset($options['theme']))
       {
         extract(self::intersect('name','path','template','layout', $options['theme']));
         $this->theme = new Theme($name, $path, $template, $layout);
-      }
 
-      if (isset($options['environment']))
-      {
-        $this->environment = new Environment($this->loader, $options['environment']);
-        extract(self::intersect('debug', $options['environment']));
-        $debug && $this->environment->addExtension(new \Twig_Extension_Debug());
-      }
-
-      if (isset($options['lexer']))
-      {
-        $this->lexer = new Lexer($this->environment, $options['lexer']);
-      }
-
-      if (isset($options['assets']))
-      {
-        $this->assetManager = new AssetManager($options['assets']);
+        if (isset($options['assets']))
+        {
+          $this->assetManager = new AssetManager($this->theme, $options['assets']);
+        }
       }
 
       $this->views = new Views();
-
     }
     catch (\TypeError $e)
     {
@@ -127,74 +127,10 @@ class Attire
   }
 
   /**
-	 * Render a template
-	 *
-	 * @param  array|string $views   A view or an array of views with parameters passed to the template
-	 * @param  boolean      $return  Output flag
-	 * @return string                The output as string if the return flag is set to TRUE
-	 */
-  public function render($views = NULL, array $params = [], $return = FALSE)
-  {
-    try
-    {
-      $this->CI->benchmark->mark('Attire Render Time_start');
-
-      $this->environment->addGlobal('attire', $this->assetManager);
-
-      foreach ((array) $views as $key => $value)
-      {
-        is_string($key)
-          && $this->views->add($key, $value)
-          || $this->views->add($value, $params);
-      }
-
-      if ($this->theme !== NULL)
-      {
-        $theme_path = $this->theme->getPath();
-        $layout     = $this->theme->getLayout();
-        $namespace  = $this->theme::MAIN_NAMESPACE;
-
-        $this->loader->addPath($theme_path, $namespace);
-
-        $template_file = ($layout !== FALSE ? $layout : $this->theme->getTemplate());
-
-        $template = $this->environment->loadTemplate("@{$namespace}/{$template_file}");
-        $output   = $template->render(['views' => $this->views->getStored()]);
-      }
-
-      $this->CI->benchmark->mark('Attire Render Time_end');
-
-      return $return !== FALSE ? $output : $this->CI->output->set_output($output);
-    }
-    catch (\Exception $e)
-    {
-      $this->_showError($e);
-    }
-  }
-
-  /**
-   * Intersect the values of an array based on some variables predecesors,
-   * if a variable is not defined inside the array then his value should be null.
+   * Setter Magic Method
    *
-   * @param  array $params  ...
-   * @return array          The array intersected
-   */
-  private static function intersect(...$params)
-  {
-    $options = array_pop($params);
-    foreach ($params as $key)
-    {
-      (! key_exists($key, $options)) && $options[$key] = NULL;
-    }
-    return array_intersect_key($options, array_flip($params));
-  }
-
-  /**
-   * Intersect the values of an array based on some variables predecesors,
-   * if a variable is not defined inside the array then his value should be null.
-   *
-   * @param  string $method  ...
-   * @param  array  $params  ...
+   * @param  string $method  Method name convention set<property>
+   * @param  array  $params  Method arguments
    */
   public function __call($method, array $params)
   {
@@ -225,6 +161,73 @@ class Attire
   }
 
   /**
+	 * Render a template
+	 *
+	 * @param  array|string $views   A view or an array of views with parameters passed to the template
+	 * @param  boolean      $return  Output flag
+	 * @return string                The output as string if the return flag is set to TRUE
+	 */
+  public function render($views = NULL, array $params = [], $return = FALSE)
+  {
+    try
+    {
+      $this->CI->benchmark->mark('Attire Render Time_start');
+
+      $this->environment->addFunction($this->assetManager);
+
+      foreach ((array) $views as $key => $value)
+      {
+        is_string($key)
+          && $this->views->add($key, $value)
+          || $this->views->add($value, $params);
+      }
+
+      if ($this->theme !== NULL)
+      {
+        $theme_path = $this->theme->getPath();
+        $namespace  = $this->theme->getNamespace();
+        $layout     = $this->theme->getLayout();
+        $master     = $this->theme->getTemplate();
+        $template   = ($layout !== FALSE ? $layout : $master);
+
+        $this->loader->addPath($theme_path, $namespace);
+
+        $environment = $this->environment->loadTemplate("@{$namespace}/{$template}");
+
+        $output = $environment->render([
+          'views'  => $this->views->getStored(),
+          'master' => "@{$namespace}/{$master}"
+        ]);
+      }
+
+      $this->CI->benchmark->mark('Attire Render Time_end');
+
+      return $return !== FALSE ? $output : $this->CI->output->set_output($output);
+    }
+    catch (\Exception $e)
+    {
+      $this->_showError($e);
+    }
+  }
+
+  /**
+   * Intersect the values of an array based on some variables predecesors,
+   * if a variable is not defined inside the array then his value should be null.
+   *
+   * @param  array $params  ...
+   * @return array          The array intersected
+   */
+  private static function intersect(...$params)
+  {
+    $options = array_pop($params);
+    foreach ($params as $key)
+    {
+      (! key_exists($key, $options)) && $options[$key] = NULL;
+    }
+    return array_intersect_key($options, array_flip($params));
+  }
+
+  /**
   * Show the possible exception in the output
   *
   * @param \Error $e
@@ -233,7 +236,10 @@ class Attire
   {
     if (is_cli()) { throw $e; }
     list($trace) = $e->getTrace();
-    $message = "Exception: ".$trace['class']." with the message:<br>&emsp;".$e->getMessage();
+    $message = "Exception on: "
+      .$e->getTemplateFile()
+      ."with the message:<br>"
+      ."&emsp;".$e->getMessage();
     return show_error($message, 500, 'Attire error');
   }
 }
