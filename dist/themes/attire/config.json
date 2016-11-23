@@ -1,0 +1,10 @@
+{
+  "attire": {
+   "main": {
+     "scripts": "./application/assets/scripts/**/*.js",
+     "styles": "./application/assets/styles/**/*.css"
+   },
+   "vendor": {},
+   "dest": "./assets"
+ }
+}
