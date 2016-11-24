@@ -1,6 +1,6 @@
 <!-- **Documentation for Attire is available at [http://davidsosavaldes.github.io/Attire/](<!--http://davidsosavaldes.github.io/Attire/).** -->
 
-#Attire [![Coverage Status](https://coveralls.io/repos/github/davidsosavaldes/Attire/badge.svg?branch=3.0-stable)](https://coveralls.io/github/davidsosavaldes/Attire?branch=3.0-stable) [![Latest Stable Version](https://poser.pugx.org/dsv/attire/v/stable)](https://packagist.org/packages/dsv/attire) [![Total Downloads](https://poser.pugx.org/dsv/attire/downloads)](https://packagist.org/packages/dsv/attire) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/davidsosavaldes/Attire/develop/LICENSE)
+#Attire
 
 Attire Driver supports template inheritance using **Twig** template engine in CodeIgniter.
 
