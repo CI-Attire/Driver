@@ -40,9 +40,21 @@ class Loader extends \Twig_Loader_Filesystem
    */
   public function __construct($paths, $file_ext, $root_path = NULL)
   {
-    $root_path !== NULL && self::$root_path = $root_path;
+    // $root_path !== NULL && self::$root_path = $root_path;
+    self::setRootPath($root_path);
     parent::__construct($paths, self::$root_path);
     self::setFileExtension($file_ext);
+  }
+
+  /**
+   * Get the root path
+   *
+   * @param {String} $path New path
+   * @return {boolean} The root path
+   */
+  public static function setRootPath($path)
+  {
+    return (!is_null($path)) && self::$root_path = $path;
   }
 
   /**

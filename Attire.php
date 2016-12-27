@@ -23,7 +23,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  use Attire\Driver\Loader;
  use Attire\Driver\Theme;
  use Attire\Driver\Views;
- use Symfony\Component\Yaml\Yaml;
+ use Attire\Driver\AssetManager;
 
 /**
  * CodeIgniter Attire
@@ -73,6 +73,11 @@ class Attire
   private $views;
 
   /**
+   * @var \Attire\Driver\AssetManager
+   */
+  public $assetManager;
+
+  /**
    * Class constructor
    *
    * @param array $config library params
@@ -83,30 +88,34 @@ class Attire
     {
       $this->CI =& get_instance();
 
-      empty($options) && $options = Yaml::parse(file_get_contents(APPPATH.'config/attire.yml'));
-
       if (isset($options['loader']))
       {
         extract(self::intersect('paths','file_ext','root_path', $options['loader']));
         $this->loader = new Loader($paths, $file_ext, $root_path);
+
+        if (isset($options['environment']))
+        {
+          $this->environment = new Environment($this->loader, $options['environment']);
+
+          extract(self::intersect('debug', $options['environment']));
+          ($debug !== FALSE) && $this->environment->addExtension(new \Twig_Extension_Debug());
+
+          if (isset($options['lexer']))
+          {
+            $this->lexer = new Lexer($this->environment, $options['lexer']);
+          }
+        }
       }
 
       if (isset($options['theme']))
       {
         extract(self::intersect('name','path','template','layout', $options['theme']));
         $this->theme = new Theme($name, $path, $template, $layout);
-      }
 
-      if (isset($options['environment']))
-      {
-        $this->environment = new Environment($this->loader, $options['environment']);
-        extract(self::intersect('debug', $options['environment']));
-        $debug && $this->environment->addExtension(new \Twig_Extension_Debug());
-      }
-
-      if (isset($options['lexer']))
-      {
-        $this->lexer = new Lexer($this->environment, $options['lexer']);
+        if (isset($options['assets']))
+        {
+          $this->assetManager = new AssetManager($this->theme, $options['assets']);
+        }
       }
 
       $this->views = new Views();
@@ -115,6 +124,41 @@ class Attire
     {
       $this->_showError($e);
     }
+  }
+
+  /**
+   * Setter Magic Method
+   *
+   * @param  string $method  Method name convention set<property>
+   * @param  array  $params  Method arguments
+   */
+  public function __call($method, array $params)
+  {
+    $prefix = substr($method, 0, 3);
+    if ($prefix == 'set')
+    {
+      $class = ucfirst(str_replace($prefix, '', $method));
+      switch ($class)
+      {
+        case 'Loader':
+        case 'Environment':
+        case 'Theme':
+        case 'Lexer':
+        case 'AssetManager':
+          $object = array_pop($params);
+          if (is_a($object, $class))
+          {
+            $class = strtolower($class);
+            $this->{$class} = $object;
+          }
+          else
+          {
+            throw new \TypeError("Argument 1 passed to Attire::{$method} must be an instance of Attire\Driver\\".$class);
+          }
+          break;
+      }
+    }
+    throw new \BadMethodCallException;
   }
 
   /**
@@ -130,25 +174,31 @@ class Attire
     {
       $this->CI->benchmark->mark('Attire Render Time_start');
 
+      $this->environment->addFunction($this->assetManager);
+
       foreach ((array) $views as $key => $value)
       {
         is_string($key)
           && $this->views->add($key, $value)
-          || $this->views->add($value);
+          || $this->views->add($value, $params);
       }
 
       if ($this->theme !== NULL)
       {
         $theme_path = $this->theme->getPath();
+        $namespace  = $this->theme->getNamespace();
         $layout     = $this->theme->getLayout();
-        $namespace  = $this->theme::MAIN_NAMESPACE;
+        $master     = $this->theme->getTemplate();
+        $template   = ($layout !== FALSE ? $layout : $master);
 
         $this->loader->addPath($theme_path, $namespace);
 
-        $template_file = ($layout !== FALSE ? $layout : $this->theme->getTemplate());
+        $environment = $this->environment->loadTemplate("@{$namespace}/{$template}");
 
-        $template = $this->environment->loadTemplate("@{$namespace}/{$template_file}");
-        $output   = $template->render(['views' => $this->views->getStored()]);
+        $output = $environment->render([
+          'views'  => $this->views->getStored(),
+          'master' => "@{$namespace}/{$master}"
+        ]);
       }
 
       $this->CI->benchmark->mark('Attire Render Time_end');
@@ -159,7 +209,6 @@ class Attire
     {
       $this->_showError($e);
     }
-
   }
 
   /**
@@ -180,50 +229,18 @@ class Attire
   }
 
   /**
-   * Intersect the values of an array based on some variables predecesors,
-   * if a variable is not defined inside the array then his value should be null.
-   *
-   * @param  string $method  ...
-   * @param  array  $params  ...
-   */
-  public function __call($method, array $params)
-  {
-    $prefix = substr($method, 0, 3);
-    if ($prefix == 'set')
-    {
-      $class = ucfirst(str_replace($prefix, '', $method));
-      switch ($class)
-      {
-        case 'Loader':
-        case 'Environment':
-        case 'Theme':
-        case 'Lexer':
-          $object = array_pop($params);
-          if (is_a($object, $class))
-          {
-            $class = strtolower($class);
-            $this->{$class} = $object;
-          }
-          else
-          {
-            throw new \TypeError("Argument 1 passed to Attire::{$method} must be an instance of Attire\Driver\\".$class);
-          }
-          break;
-      }
-    }
-    throw new \BadMethodCallException;
-  }
-
-  /**
   * Show the possible exception in the output
   *
-  * @param  \Exception $e
+  * @param \Error $e
   */
   private function _showError($e)
   {
     if (is_cli()) { throw $e; }
     list($trace) = $e->getTrace();
-    $message     = "Exception: ".$trace['class']." with the message:<br>&emsp;".$e->getMessage();
+    $message = "Exception on: "
+      .$e->getTemplateFile()
+      ."with the message:<br>"
+      ."&emsp;".$e->getMessage();
     return show_error($message, 500, 'Attire error');
   }
 }
