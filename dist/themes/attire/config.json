@@ -1,10 +1,4 @@
 {
-  "attire": {
-   "main": {
-     "scripts": "./application/assets/scripts/**/*.js",
-     "styles": "./application/assets/styles/**/*.css"
-   },
-   "vendor": {},
-   "dest": "./assets"
- }
+  "attire.js": ["assets/js/attire.js"],
+  "attire.css": ["assets/css/attire.css"]
 }

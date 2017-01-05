@@ -72,7 +72,7 @@ $config['environment'] = [
 | 	];
 |
 */
-$config['assets'] = 'attire.config.json';
+$config['assets'] = [];
 
 /*
 |--------------------------------------------------------------------------
