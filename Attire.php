@@ -16,14 +16,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  */
 
  use Attire\Driver\Environment;
- use Attire\Driver\Filter;
- use Attire\Driver\Functions;
- use Attire\Driver\Globals;
  use Attire\Driver\Lexer;
  use Attire\Driver\Loader;
  use Attire\Driver\Theme;
  use Attire\Driver\Views;
  use Attire\Driver\AssetManager;
+
+ use Attire\Extensions\Display as DisplayExtension;
 
 /**
  * CodeIgniter Attire
@@ -41,7 +40,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  */
 class Attire
 {
-
   /**
    * @var \CI_Controller
    */
@@ -75,7 +73,12 @@ class Attire
   /**
    * @var \Attire\Driver\AssetManager
    */
-  public $assetManager;
+  private $assetManager;
+
+  /**
+   * @var \Attire\Extensions\Display
+   */
+  private $displayExtension;
 
   /**
    * Class constructor
@@ -118,7 +121,13 @@ class Attire
         }
       }
 
-      $this->views = new Views();
+      $this->views = new Views;
+
+      $this->displayExtension = new DisplayExtension;
+
+      isset($options['filters']) && $this->displayExtension->addFilters($options['filters']);
+      isset($options['globals']) && $this->displayExtension->addGlobals($options['globals']);
+      isset($options['functions']) && $this->displayExtension->addFunctions($options['functions']);
     }
     catch (\TypeError $e)
     {
@@ -175,6 +184,23 @@ class Attire
       $this->CI->benchmark->mark('Attire Render Time_start');
 
       $this->environment->addFunction($this->assetManager);
+
+      // $this->environment->addExtension($this->displayExtension);
+
+      foreach ($this->displayExtension->getFunctions() as $function)
+      {
+        $this->environment->addFunction($function);
+      }
+
+      foreach ($this->displayExtension->getGlobals() as $name => $value)
+      {
+        $this->environment->addGlobal($name, $value);
+      }
+
+      foreach ($this->displayExtension->getFilters() as $filter)
+      {
+        $this->environment->addFilters($filter);
+      }
 
       foreach ((array) $views as $key => $value)
       {
@@ -239,7 +265,7 @@ class Attire
     list($trace) = $e->getTrace();
     $message = "Exception on: "
       .$e->getTemplateFile()
-      ."with the message:<br>"
+      ." with the message:<br>"
       ."&emsp;".$e->getMessage();
     return show_error($message, 500, 'Attire error');
   }

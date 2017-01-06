@@ -16,6 +16,7 @@ namespace Attire\Driver;
  */
 
 use Attire\Driver\Theme;
+use Attire\Exceptions\AssetManagerException;
 
 /**
  * Attire AssetManager
@@ -46,8 +47,13 @@ class AssetManager extends \Twig_SimpleFunction
     {
       $this->config = json_decode(file_get_contents($file), TRUE);
     }
-    parent::__construct('attire', function($filename) {
-      return key_exists($filename, $this->config)? $this->config[$filename] : NULL;
-    });
+    $callback = function($filename) {
+      if (! key_exists($filename, $this->config))
+      {
+        throw new AssetManagerException("Error Processing the Asset: {$filename}");
+      }
+      return $this->config[$filename];
+    };
+    parent::__construct('attire', $callback);
   }
 }
