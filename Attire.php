@@ -21,8 +21,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  use Attire\Driver\Theme;
  use Attire\Driver\Views;
  use Attire\Driver\AssetManager;
-
- use Attire\Extensions\Display as DisplayExtension;
+ use Attire\Driver\DisplayExtension;
 
 /**
  * CodeIgniter Attire
@@ -117,7 +116,7 @@ class Attire
 
         if (isset($options['assets']))
         {
-          $this->assetManager = new AssetManager($this->theme, $options['assets']);
+          $this->assetManager = new AssetManager($this->CI, $this->theme, $options['assets']);
         }
       }
 
@@ -183,8 +182,10 @@ class Attire
     {
       $this->CI->benchmark->mark('Attire Render Time_start');
 
+      // Set the asset manager
       $this->environment->addFunction($this->assetManager);
 
+      // @todo Set a Twig Extension properly, insted of calling one by one all of their methods  
       // $this->environment->addExtension($this->displayExtension);
 
       foreach ($this->displayExtension->getFunctions() as $function)
@@ -215,7 +216,7 @@ class Attire
         $namespace  = $this->theme->getNamespace();
         $layout     = $this->theme->getLayout();
         $master     = $this->theme->getTemplate();
-        $template   = ($layout !== FALSE ? $layout : $master);
+        $template   = $layout !== FALSE ? $layout : $master;
 
         $this->loader->addPath($theme_path, $namespace);
 

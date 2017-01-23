@@ -31,14 +31,26 @@ class AssetManager extends \Twig_SimpleFunction
 {
   private $config;
 
+  private $default_port = 80;
+
   /**
    * Class constructor
    *
-   * @param {Theme}        $theme     \Attire\Driver\Theme instance
-   * @param {string|array} $args      A set of defined asset paths or the file that contains this paths.
+   * @param {CI_Controller} $CI        \CI_Controller reference (CI->get_instance)
+   * @param {Theme}         $theme     \Attire\Driver\Theme instance
+   * @param {string|array}  $args      A set of defined asset paths or the file that contains this paths.
    */
-  public function __construct(Theme $theme, $args)
+  public function __construct(\CI_Controller &$CI, Theme $theme, $args)
   {
+    $CI->load->helper('url');
+
+    $_base_url = rtrim(base_url(), '/');
+
+    if (($_port = intval($_SERVER['SERVER_PORT'])) && $_port != $this->default_port) 
+    {
+      $_base_url .= ":{$_SERVER['SERVER_PORT']}";
+    }
+
     if (is_array($args))
     {
       $this->config = $args;
@@ -47,13 +59,18 @@ class AssetManager extends \Twig_SimpleFunction
     {
       $this->config = json_decode(file_get_contents($file), TRUE);
     }
-    $callback = function($filename) {
+
+    parent::__construct('attire', function($filename) use ($_base_url) {
       if (! key_exists($filename, $this->config))
       {
         throw new AssetManagerException("Error Processing the Asset: {$filename}");
       }
-      return $this->config[$filename];
-    };
-    parent::__construct('attire', $callback);
+      return $_base_url . '/assets/' . $this->config[$filename];
+    });
+  }
+
+  public function getConfig()
+  {
+    return $this->config;
   }
 }

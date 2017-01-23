@@ -1,5 +1,5 @@
 <?php
-namespace Attire\Extensions;
+namespace Attire\Driver;
 
 /**
  * CodeIgniter
@@ -24,7 +24,7 @@ namespace Attire\Extensions;
  * @author     David Sosa Valdes
  * @link       https://github.com/davidsosavaldes/Attire
  */
-class Display extends \Twig_Extension
+class DisplayExtension extends \Twig_Extension
 {
   private $functions = [];
 
