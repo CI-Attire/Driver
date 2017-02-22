@@ -20,8 +20,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  use Attire\Driver\Loader;
  use Attire\Driver\Theme;
  use Attire\Driver\Views;
- use Attire\Driver\AssetManager;
- use Attire\Driver\DisplayExtension;
+ use Attire\Managers\Asset as AssetManager;
+ use Attire\Managers\Extension as ExtensionManager;
 
 /**
  * CodeIgniter Attire
@@ -70,14 +70,14 @@ class Attire
   private $views;
 
   /**
-   * @var \Attire\Driver\AssetManager
+   * @var \Attire\Managers\Asset
    */
   private $assetManager;
 
   /**
-   * @var \Attire\Extensions\Display
+   * @var \Attire\Managers\Extension
    */
-  private $displayExtension;
+  private $extensionManager;
 
   /**
    * Class constructor
@@ -86,87 +86,53 @@ class Attire
    */
   function __construct(array $options = [])
   {
-    try
+    $this->CI =& get_instance();
+
+    if (isset($options['loader']))
     {
-      $this->CI =& get_instance();
+      extract(self::intersect('paths','file_ext','root_path', $options['loader']));
+      $this->loader = new Loader($paths, $file_ext, $root_path);
 
-      if (isset($options['loader']))
+      if (isset($options['environment']))
       {
-        extract(self::intersect('paths','file_ext','root_path', $options['loader']));
-        $this->loader = new Loader($paths, $file_ext, $root_path);
+        $this->environment = new Environment($this->loader, $options['environment']);
 
-        if (isset($options['environment']))
+        extract(self::intersect('debug', $options['environment']));
+        ($debug !== FALSE) && $this->environment->addExtension(new \Twig_Extension_Debug());
+
+        if (isset($options['lexer']))
         {
-          $this->environment = new Environment($this->loader, $options['environment']);
-
-          extract(self::intersect('debug', $options['environment']));
-          ($debug !== FALSE) && $this->environment->addExtension(new \Twig_Extension_Debug());
-
-          if (isset($options['lexer']))
-          {
-            $this->lexer = new Lexer($this->environment, $options['lexer']);
-          }
+          $this->lexer = new Lexer($this->environment, $options['lexer']);
         }
       }
+    }
 
-      if (isset($options['theme']))
+    if (isset($options['theme']))
+    {
+      extract(self::intersect('name','path','template','layout', $options['theme']));
+      $this->theme = new Theme($name, $path, $template, $layout);
+
+      if (isset($options['assets']))
       {
-        extract(self::intersect('name','path','template','layout', $options['theme']));
-        $this->theme = new Theme($name, $path, $template, $layout);
+        $this->assetManager = new AssetManager($this->CI, $this->theme, $options['assets']);
+      }
+    }
 
-        if (isset($options['assets']))
+    $this->views = new Views;
+
+    $this->extensionManager = new ExtensionManager();
+
+    array_walk($this->extensionManager->extensions, function($type, $key) use ($options) {
+      if (isset($options[$type]))
+      {
+        switch ($type)
         {
-          $this->assetManager = new AssetManager($this->CI, $this->theme, $options['assets']);
+          case 'functions': $this->extensionManager->addFunctions($options[$type]); break;
+          case 'filters'  : $this->extensionManager->addFilters($options[$type]); break;
+          case 'globals'  : $this->extensionManager->addGlobals($options[$type]); break;
         }
       }
-
-      $this->views = new Views;
-
-      $this->displayExtension = new DisplayExtension;
-
-      isset($options['filters']) && $this->displayExtension->addFilters($options['filters']);
-      isset($options['globals']) && $this->displayExtension->addGlobals($options['globals']);
-      isset($options['functions']) && $this->displayExtension->addFunctions($options['functions']);
-    }
-    catch (\TypeError $e)
-    {
-      $this->_showError($e);
-    }
-  }
-
-  /**
-   * Setter Magic Method
-   *
-   * @param  string $method  Method name convention set<property>
-   * @param  array  $params  Method arguments
-   */
-  public function __call($method, array $params)
-  {
-    $prefix = substr($method, 0, 3);
-    if ($prefix == 'set')
-    {
-      $class = ucfirst(str_replace($prefix, '', $method));
-      switch ($class)
-      {
-        case 'Loader':
-        case 'Environment':
-        case 'Theme':
-        case 'Lexer':
-        case 'AssetManager':
-          $object = array_pop($params);
-          if (is_a($object, $class))
-          {
-            $class = strtolower($class);
-            $this->{$class} = $object;
-          }
-          else
-          {
-            throw new \TypeError("Argument 1 passed to Attire::{$method} must be an instance of Attire\Driver\\".$class);
-          }
-          break;
-      }
-    }
-    throw new \BadMethodCallException;
+    });
   }
 
   /**
@@ -181,28 +147,11 @@ class Attire
     try
     {
       $this->CI->benchmark->mark('Attire Render Time_start');
-
       // Set the asset manager
-      $this->environment->addFunction($this->assetManager);
-
-      // @todo Set a Twig Extension properly, insted of calling one by one all of their methods  
-      // $this->environment->addExtension($this->displayExtension);
-
-      foreach ($this->displayExtension->getFunctions() as $function)
-      {
-        $this->environment->addFunction($function);
-      }
-
-      foreach ($this->displayExtension->getGlobals() as $name => $value)
-      {
-        $this->environment->addGlobal($name, $value);
-      }
-
-      foreach ($this->displayExtension->getFilters() as $filter)
-      {
-        $this->environment->addFilters($filter);
-      }
-
+      $this->environment->addExtension($this->assetManager);
+      // Set the extension manager
+      $this->environment->addExtension($this->extensionManager);
+      // Add all the stored views
       foreach ((array) $views as $key => $value)
       {
         is_string($key)
@@ -239,6 +188,42 @@ class Attire
   }
 
   /**
+   * Setter Magic Method
+   *
+   * @param  string $method  Method name convention set<property>
+   * @param  array  $params  Method arguments
+   */
+  public function __call($method, array $params)
+  {
+    $prefix = substr($method, 0, 3);
+    if ($prefix == 'set')
+    {
+      $class = ucfirst(str_replace($prefix, '', $method));
+      switch ($class)
+      {
+        case 'Loader':
+        case 'Environment':
+        case 'Theme':
+        case 'Lexer':
+        case 'AssetManager':
+          $object = array_pop($params);
+          if (is_a($object, $class))
+          {
+            $class = strtolower($class);
+            $this->{$class} = $object;
+          }
+          else
+          {
+            throw new \TypeError("Argument 1 passed to Attire::{$method} must be an instance of Attire\Driver\\".$class);
+          }
+          break;
+        default:
+          throw new \BadMethodCallException;
+      }
+    }
+  }
+
+  /**
    * Intersect the values of an array based on some variables predecesors,
    * if a variable is not defined inside the array then his value should be null.
    *
@@ -248,6 +233,7 @@ class Attire
   private static function intersect(...$params)
   {
     $options = array_pop($params);
+
     foreach ($params as $key)
     {
       (! key_exists($key, $options)) && $options[$key] = NULL;

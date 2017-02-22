@@ -16,7 +16,7 @@ namespace Attire\Driver;
  */
 
  use \Attire\Driver\Loader;
- use \Attire\Exceptions\ThemeException;
+ use \Attire\Exceptions\Theme as ThemeException;
 
 /**
  * Attire Theme
@@ -122,7 +122,7 @@ class Theme
 	 */
   public function getPath()
   {
-    return Loader::getRootPath()."{$this->path}{$this->name}";
+    return Loader::getRootPath() . "{$this->path}{$this->name}";
   }
 
   /**
@@ -163,9 +163,10 @@ class Theme
       if ($layout !== FALSE)
       {
         (! self::haveExtension($layout)) && $layout .= self::getFileExtension();
-        if (! file_exists($layout_file = Loader::getRootPath()."{$this->path}{$this->name}/{$layout}"))
+
+        if (! file_exists($layout_file = $this->getPath()."/{$layout}"))
         {
-          throw new ThemeException("Cannot find theme layout: {$layout} inside: " . Loader::getRootPath() . "{$this->path}{$this->name}");
+          throw new ThemeException("Cannot find theme layout: {$layout} inside: " . $this->getPath());
         }
       }
       $this->layout = $layout;
