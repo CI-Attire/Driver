@@ -1,5 +1,5 @@
 <?php
-namespace Attire\Driver;
+namespace Attire\Managers;
 
 /**
  * CodeIgniter
@@ -16,7 +16,7 @@ namespace Attire\Driver;
  */
 
 use Attire\Driver\Theme;
-use Attire\Exceptions\AssetManagerException;
+use Attire\Exceptions\Manager as AssetException;
 
 /**
  * Attire AssetManager
@@ -27,11 +27,11 @@ use Attire\Exceptions\AssetManagerException;
  * @author     David Sosa Valdes
  * @link       https://github.com/davidsosavaldes/Attire
  */
-class AssetManager extends \Twig_SimpleFunction
+class Asset extends \Twig_Extension
 {
   private $config;
 
-  private $default_port = 80;
+  private $directory = 'assets';
 
   /**
    * Class constructor
@@ -44,13 +44,6 @@ class AssetManager extends \Twig_SimpleFunction
   {
     $CI->load->helper('url');
 
-    $_base_url = rtrim(base_url(), '/');
-
-    if (($_port = intval($_SERVER['SERVER_PORT'])) && $_port != $this->default_port) 
-    {
-      $_base_url .= ":{$_SERVER['SERVER_PORT']}";
-    }
-
     if (is_array($args))
     {
       $this->config = $args;
@@ -59,18 +52,21 @@ class AssetManager extends \Twig_SimpleFunction
     {
       $this->config = json_decode(file_get_contents($file), TRUE);
     }
-
-    parent::__construct('attire', function($filename) use ($_base_url) {
-      if (! key_exists($filename, $this->config))
-      {
-        throw new AssetManagerException("Error Processing the Asset: {$filename}");
-      }
-      return $_base_url . '/assets/' . $this->config[$filename];
-    });
   }
 
-  public function getConfig()
-  {
-    return $this->config;
+  public function setDirectory($directory){
+    $this->directory = rtrim($directory, '/');
+  }
+
+  public function getFunctions() {
+    return [
+      new \Twig_SimpleFunction('attire', function($filename) {
+        if (! key_exists($filename, $this->config))
+        {
+          throw new AssetException("Error Processing the Asset: {$filename}");
+        }
+        return rtrim(base_url("{$this->directory}/{$this->config[$filename]}"),'/');
+      })
+    ];
   }
 }
