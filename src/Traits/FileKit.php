@@ -1,5 +1,5 @@
 <?php
-namespace Attire\Traits\File;
+namespace Attire\Traits;
 
 /**
  * Attire File Extension Trait
@@ -10,13 +10,25 @@ namespace Attire\Traits\File;
  * @author     David Sosa Valdes
  * @link       https://github.com/davidsosavaldes/Attire
  */
-trait Extension
+trait FileKit
 {
 	/**
 	 * File extension
 	 * @var string
 	 */
 	private static $ext = '.twig';
+
+	/**
+	 * Right trim a file path
+	 *
+	 * @param  string  $path 			File path
+	 * @param  string  $delimiter Path delimiter
+	 * @return boolean       			Cleaned path
+	 */
+	public static function rtrim($path, $delimiter='/')
+	{
+		return rtrim($path, $delimiter);
+	}
 
 	/**
 	 * Check if file have extension
