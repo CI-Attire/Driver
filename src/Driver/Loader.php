@@ -26,7 +26,7 @@ namespace Attire\Driver;
  */
 class Loader extends \Twig_Loader_Filesystem
 {
-  use \Attire\Traits\File\Extension;
+  use \Attire\Traits\FileKit;
 
   /**
    * @var {String} Root Path (default: CI APPPATH)
@@ -40,9 +40,7 @@ class Loader extends \Twig_Loader_Filesystem
    */
   public function __construct($paths, $file_ext, $root_path = NULL)
   {
-    // $root_path !== NULL && self::$root_path = $root_path;
-    self::setRootPath($root_path);
-    parent::__construct($paths, self::$root_path);
+    parent::__construct($paths, self::setRootPath($root_path));
     self::setFileExtension($file_ext);
   }
 
@@ -54,7 +52,8 @@ class Loader extends \Twig_Loader_Filesystem
    */
   public static function setRootPath($path)
   {
-    return (!is_null($path)) && self::$root_path = $path;
+    (! is_null($path)) && self::$root_path = $path;
+    return self::$root_path;
   }
 
   /**

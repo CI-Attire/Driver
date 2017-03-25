@@ -28,7 +28,7 @@ namespace Attire\Driver;
  */
 class Views
 {
-  use \Attire\Traits\File\Extension;
+  use \Attire\Traits\FileKit;
 	/**
 	 * Set of views stored
 	 * @var array

@@ -20,8 +20,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  use Attire\Driver\Loader;
  use Attire\Driver\Theme;
  use Attire\Driver\Views;
- use Attire\Managers\Asset as AssetManager;
- use Attire\Managers\Extension as ExtensionManager;
+
+ use Attire\Libraries\AssetManager;
+ use Attire\Libraries\ExtensionManager;
 
 /**
  * CodeIgniter Attire
@@ -98,7 +99,7 @@ class Attire
         $this->environment = new Environment($this->loader, $options['environment']);
 
         extract(self::intersect('debug', $options['environment']));
-        ($debug !== FALSE) && $this->environment->addExtension(new \Twig_Extension_Debug());
+        ($debug !== FALSE) && $this->environment->addExtension(new \Twig_Extension_Debug);
 
         if (isset($options['lexer']))
         {
@@ -114,25 +115,19 @@ class Attire
 
       if (isset($options['assets']))
       {
-        $this->assetManager = new AssetManager($this->CI, $this->theme, $options['assets']);
+        $this->assetManager = new AssetManager($this->CI, $options['assets']);
       }
     }
 
     $this->views = new Views;
 
-    $this->extensionManager = new ExtensionManager();
+    $extensions = [];
 
-    array_walk($this->extensionManager->extensions, function($type, $key) use ($options) {
-      if (isset($options[$type]))
-      {
-        switch ($type)
-        {
-          case 'functions': $this->extensionManager->addFunctions($options[$type]); break;
-          case 'filters'  : $this->extensionManager->addFilters($options[$type]); break;
-          case 'globals'  : $this->extensionManager->addGlobals($options[$type]); break;
-        }
-      }
-    });
+    $options['functions'] ?? $extensions['functions'] = $options['functions'];
+    $options['filters'] ?? $extensions['filters'] = $options['filters'];
+    $options['globals'] ?? $extensions['globals'] = $options['globals'];
+
+    $this->extensionManager = new ExtensionManager($extensions);
   }
 
   /**
@@ -167,7 +162,8 @@ class Attire
         $master     = $this->theme->getTemplate();
         $template   = $layout !== FALSE ? $layout : $master;
 
-        $this->loader->addPath($theme_path, $namespace);
+        $this->loader->addPath($this->theme->getMainThemePath(), 'attire'); // @general template path
+        $this->loader->addPath($theme_path, $namespace); // @custom themplate path
 
         $environment = $this->environment->loadTemplate("@{$namespace}/{$template}");
 
@@ -188,43 +184,7 @@ class Attire
   }
 
   /**
-   * Setter Magic Method
-   *
-   * @param  string $method  Method name convention set<property>
-   * @param  array  $params  Method arguments
-   */
-  public function __call($method, array $params)
-  {
-    $prefix = substr($method, 0, 3);
-    if ($prefix == 'set')
-    {
-      $class = ucfirst(str_replace($prefix, '', $method));
-      switch ($class)
-      {
-        case 'Loader':
-        case 'Environment':
-        case 'Theme':
-        case 'Lexer':
-        case 'AssetManager':
-          $object = array_pop($params);
-          if (is_a($object, $class))
-          {
-            $class = strtolower($class);
-            $this->{$class} = $object;
-          }
-          else
-          {
-            throw new \TypeError("Argument 1 passed to Attire::{$method} must be an instance of Attire\Driver\\".$class);
-          }
-          break;
-        default:
-          throw new \BadMethodCallException;
-      }
-    }
-  }
-
-  /**
-   * Intersect the values of an array based on some variables predecesors,
+   * Intersect the values of an array based on the predecesors,
    * if a variable is not defined inside the array then his value should be null.
    *
    * @param  array $params  ...

@@ -29,36 +29,41 @@ namespace Attire\Driver;
  */
 class Theme
 {
-  use \Attire\Traits\File\Extension;
+  use \Attire\Traits\FileKit;
 
   /**
    * Theme directory used as name
    * @var string
    */
-  protected $name = 'attire';
+  private static $name = 'attire';
 
   /**
    * Themes default path
    * @var string
    */
-  protected $path = 'themes/';
+  private static $path = 'themes/';
 
   /**
    * Master template rendered
    * @var string
    */
-  protected $template = 'master.twig';
+  private static $template = 'master.twig';
 
   /**
    * Slave layout if exists
    * @var string
    */
-  protected $layout = 'layouts/default.twig';
+  private static $layout = 'layouts/default.twig';
 
   /**
    * Identifier of the main namespace.
    */
   const MAIN_NAMESPACE = 'theme';
+
+  /**
+   * Identifier of the main theme name.
+   */
+  const MAIN_THEMENAME = 'attire';
 
   /**
 	 * Class constructor
@@ -84,18 +89,19 @@ class Theme
     return self::MAIN_NAMESPACE;
   }
 
+  public function getMainThemePath()
+  {
+    return rtrim($this->getPath(), self::$name) . self::MAIN_THEMENAME; 
+  }
+
   /**
    * Get the theme name
    *
    * @return string Theme name
    */
-  public function setName($name)
+  public function setName($name=NULL)
   {
-    if (! is_string($name))
-    {
-      throw new ThemeException("Name could not be converted to string");
-    }
-    $this->name = $name;
+    (!! $name) && self::$name = $name;
     return $this;
   }
 
@@ -106,12 +112,11 @@ class Theme
 	 */
   public function setPath($path)
   {
-    $abs_path = Loader::getRootPath()."{$path}";
-    if (! is_dir($abs_path))
+    if (! is_dir($abs_path = Loader::getRootPath()."{$path}"))
     {
       throw new ThemeException("Cannot find theme directory: {$path} inside:". Loader::getRootPath());
     }
-    $this->path = rtrim($path, '/').DIRECTORY_SEPARATOR;
+    self::$path = self::rtrim($path).DIRECTORY_SEPARATOR;
     return $this;
   }
 
@@ -120,9 +125,9 @@ class Theme
 	 *
 	 * @return string Theme path
 	 */
-  public function getPath()
+  public static function getPath()
   {
-    return Loader::getRootPath() . "{$this->path}{$this->name}";
+    return Loader::getRootPath() . self::$path . self::$name;
   }
 
   /**
@@ -135,7 +140,7 @@ class Theme
     if ($template !== NULL)
     {
       (! self::haveExtension($template)) && $template .= self::getFileExtension();
-      $this->template = $template;
+      self::$template = $template;
     }
     return $this;
   }
@@ -147,7 +152,7 @@ class Theme
 	 */
   public function getTemplate()
   {
-    return $this->template;
+    return self::$template;
   }
 
   /**
@@ -162,14 +167,16 @@ class Theme
     {
       if ($layout !== FALSE)
       {
+        $path = $this->getPath();
+
         (! self::haveExtension($layout)) && $layout .= self::getFileExtension();
 
-        if (! file_exists($layout_file = $this->getPath()."/{$layout}"))
+        if (! file_exists($layout_file = "{$path}/{$layout}"))
         {
-          throw new ThemeException("Cannot find theme layout: {$layout} inside: " . $this->getPath());
+          throw new ThemeException("Cannot find theme layout: {$layout} inside: " . $path);
         }
       }
-      $this->layout = $layout;
+      self::$layout = $layout;
     }
     return $this;
   }
@@ -181,6 +188,6 @@ class Theme
   */
   public function getLayout()
   {
-    return $this->layout;
+    return self::$layout;
   }
 }
