@@ -1,7 +1,6 @@
 {% extends master %}
 
 {% block content %}
-	{% for view, params in views %}
-		{% include view with params %}
-	{% endfor %}
+	{{ parent() }}
+	<!-- your content here -->
 {% endblock %}
