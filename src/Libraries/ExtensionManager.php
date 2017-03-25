@@ -1,5 +1,5 @@
 <?php
-namespace Attire\Managers;
+namespace Attire\Libraries;
 
 /**
  * CodeIgniter
@@ -24,7 +24,7 @@ namespace Attire\Managers;
  * @author     David Sosa Valdes
  * @link       https://github.com/davidsosavaldes/Attire
  */
-class Extension extends \Twig_Extension
+class ExtensionManager extends \Twig_Extension
 {
   private $_functions = [];
 
@@ -32,7 +32,26 @@ class Extension extends \Twig_Extension
 
   private $_globals = [];
 
-  public $extensions = ['filters','globals','functions'];
+  public static $extensions = ['filters','globals','functions'];
+
+  public function __construct(array $params = [])
+  {
+    foreach ($params as $key => $objects)
+    {
+      switch ($key)
+      {
+        case 'functions':
+          $this->addFunctions($objects);
+          break;
+        case 'filters':
+          $this->addFilters($objects);
+          break;
+        case 'globals':
+          $this->addGlobals($objects);
+          break;
+      }
+    }
+  }
 
   public function getFilters()
   {
