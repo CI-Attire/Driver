@@ -26,7 +26,7 @@ $config['loader'] = [
 |
 */
 $config['theme'] = [
-	'name' => 'attire',
+	'name' => FALSE,
 	'path' => 'themes/'
 ];
 
