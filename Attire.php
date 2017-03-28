@@ -122,10 +122,9 @@ class Attire
     $this->views = new Views;
 
     $extensions = [];
-
-    $options['functions'] ?? $extensions['functions'] = $options['functions'];
-    $options['filters'] ?? $extensions['filters'] = $options['filters'];
-    $options['globals'] ?? $extensions['globals'] = $options['globals'];
+    $extensions['functions'] = $options['functions'] ?? [];
+    $extensions['filters'] = $options['filters'] ?? [];
+    $extensions['globals'] = $options['globals'] ?? [];
 
     $this->extensionManager = new ExtensionManager($extensions);
   }
