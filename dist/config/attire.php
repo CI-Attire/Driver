@@ -61,15 +61,29 @@ $config['environment'] = [
 | Asset Manager
 |--------------------------------------------------------------------------
 |
-| Path to the assets defined with a simple key. Example:
+| The following options are available:
 |
-| JSON file:
-| 	$config['assets'] = 'attire.config.json' (relative to the root path)
+| * manifest: intercepts the actual path of all your asset files (versioned)
+| * autoload: include all your extra assets directly in your layout
+| * namespace: prefix of all your assets path (default: NULL)
 |
-| Array:
-| 	$config['assets'] = [
-|			'bootstrap.min.css' => './bower/<bootstrap/dist/css/bootstrap.min.css'
-| 	];
+| Example:
+|
+| 	Manifest
+|			file: (json format only)
+| 			$config['assets']['manifest'] = FCPATH.'attire.manifest.json'
+|
+| 		Array:
+| 			$config['assets']['manifest'] = [
+|					'bootstrap.min.css' => './bower/<bootstrap/dist/css/bootstrap.min.css'
+| 			];
+|
+|		Autoload:
+|			$config['assets']['autoload'] = [
+|				'scripts' => [
+|					'js/foo.js'
+|				]
+|			]
 |
 */
 $config['assets'] = [];
