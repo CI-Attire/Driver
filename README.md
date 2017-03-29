@@ -1,6 +1,6 @@
 <!-- **Documentation for Attire is available at [http://davidsosavaldes.github.io/Attire/](<!--http://davidsosavaldes.github.io/Attire/).** -->
 
-#Attire
+# Attire
 
 Attire Driver supports template inheritance using **Twig** template engine in CodeIgniter.
 
@@ -27,7 +27,7 @@ ln -s ~/path/to/Driver/Attire.php tests/integration/application/libraries/attire
 	ln -s ~	full/path/to/Attire/dist/config tests/_application/config
 
 And finnally in `drivers/Attire_theme.php` driver class we need to change the default theme path:
-	
+
 	# From:
 	private $_path = APPPATH.'libraries/Attire/dist/';
 	# To:
@@ -42,7 +42,7 @@ Also check if the directory paths used in the `tests/unit/_bootstrap.php` file a
 
 And finally run the tests with codeception
 
-	php vendor/bin/codecept run	
+	php vendor/bin/codecept run
 
 -->
 
