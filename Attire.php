@@ -88,7 +88,6 @@ class Attire
   function __construct(array $options = [])
   {
     $this->CI =& get_instance();
-    $this->CI->load->helper('url');
 
     if (isset($options['loader']))
     {

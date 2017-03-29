@@ -41,7 +41,12 @@ class AssetManager extends \Twig_Extension
    */
   private $namespace = NULL;
 
+  /**
+   * Autoload Assets
+   */
   private $autoload = [];
+
+  private $throw_error = FALSE;
 
   /**
    * Class constructor
@@ -77,6 +82,12 @@ class AssetManager extends \Twig_Extension
     return $this;
   }
 
+  public function debug($state = TRUE)
+  {
+    $this->throw_error = $state;
+    return $this;
+  }
+
   public function addAsset($filePath, $namespace)
   {
     return isset($this->autoload[$namespace])
@@ -99,11 +110,13 @@ class AssetManager extends \Twig_Extension
     return [
       new \Twig_SimpleFunction('attire', function($filename)
         {
-          if (! isset($this->manifest[$filename]))
+          $fileExists = isset($this->manifest[$filename]);
+
+          if ($this->throw_error && (! $fileExists))
           {
             throw new ManagerException("Error Processing the Asset: {$filename}");
           }
-          return self::rtrim(base_url("{$this->namespace}/".$this->manifest[$filename]));
+          return self::rtrim("{$this->namespace}/" . ($fileExists? $this->manifest[$filename] : $filename));
         }
       )
     ];

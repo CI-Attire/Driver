@@ -63,27 +63,30 @@ $config['environment'] = [
 |
 | The following options are available:
 |
-| * manifest: intercepts the actual path of all your asset files (versioned)
 | * autoload: include all your extra assets directly in your layout
-| * namespace: prefix of all your assets path (default: NULL)
+| * manifest: if you're implementing versioned assets, the manifest is used
+| 						by the attire() function to intercept the actual path of all
+| 						your asset files.
+| * namespace: prefix of your assets path (default: NULL)
 |
 | Example:
 |
-| 	Manifest
-|			file: (json format only)
-| 			$config['assets']['manifest'] = FCPATH.'attire.manifest.json'
-|
-| 		Array:
-| 			$config['assets']['manifest'] = [
-|					'bootstrap.min.css' => './bower/<bootstrap/dist/css/bootstrap.min.css'
-| 			];
-|
-|		Autoload:
-|			$config['assets']['autoload'] = [
-|				'scripts' => [
-|					'js/foo.js'
-|				]
+|		# autoload
+|		$config['assets']['autoload'] = [
+|			'scripts' => [
+|				'js/foo.js'
 |			]
+|		];
+|
+| 	# manifest as array
+| 	$config['assets']['manifest'] = [
+|			'bootstrap.min.css' => 'dist/css/bootstrap.min.css', # different path
+|			'jquery.min.js' => 'scripts/jquery98787Ah.min.js', # versioned files
+| 		'foo.js' => 'scripts/bar.js' # renamed files
+| 	];
+|
+|		# manifest as file (format: json)
+|		$config['assets']['manifest'] = FCPATH.'attire.manifest.json'
 |
 */
 $config['assets'] = [];
