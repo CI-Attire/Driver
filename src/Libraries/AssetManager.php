@@ -37,33 +37,62 @@ class AssetManager extends \Twig_Extension
   private $manifest = [];
 
   /**
-   * Namespace path (relative to FCPATH)
+   * Namespace path
    */
-  private $namespace = 'assets';
+  private $namespace = NULL;
+
+  private $autoload = [];
 
   /**
    * Class constructor
    *
-   * @param {CI_Controller} $CI        CI_Controller reference (CI->get_instance)
-   * @param {string|array}  $manifest  A set of defined asset paths or the file that contains this paths.
+   * @param {string} $namespace  Asset path prefix
+   * @param {mixed}  $manifest   Set of defined asset paths or the file that contains this paths
+   * @param {array}  $autoload   Set of included assets directly in the layout
    */
-  public function __construct(\CI_Controller &$CI, $manifest, array $extra_assets=[])
+  public function __construct($namespace, $manifest, array $autoload = [])
   {
-    $CI->load->helper('url');
+    $this
+      ->setNamespace($namespace)
+      ->setManifest($manifest)
+      ->setAutoload($autoload);
+  }
 
+  public function setNamespace($namespace)
+  {
+    $this->namespace = self::rtrim($namespace);
+    return $this;
+  }
+
+  public function setManifest($manifest)
+  {
     if (is_array($manifest))
     {
       $this->manifest = $manifest;
     }
-    elseif (file_exists($file = $manifest) || file_exists(($file = Theme::getPath()."/{$manifest}")))
+    elseif (file_exists($file = $manifest))
     {
       $this->manifest = json_decode(file_get_contents($file), TRUE);
     }
+    return $this;
   }
 
-  public function setManifest($namespace)
+  public function addAsset($filePath, $namespace)
   {
-    $this->namespace = self::rtrim($namespace);
+    return isset($this->autoload[$namespace])
+      ? $this->autoload[$namespace][] = $filePath
+      : FALSE;
+  }
+
+  public function setAutoload(array $autoload)
+  {
+    $this->autoload = $autoload;
+    return $this;
+  }
+
+  public function getAutoload()
+  {
+    return $this->autoload;
   }
 
   public function getFunctions() {

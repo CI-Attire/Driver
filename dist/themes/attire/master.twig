@@ -1,23 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-	{% block head %}
+ {% block head %}
  	<head>
 		<meta charset="utf-8">
 	 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	 	{% block stylesheets %}{% endblock %}
+    {% block autoload_stylesheets %}
+      {% for style in assets.styles %}
+  			<link rel="stylesheet" href="{{attire(style)}}">
+  	  {% endfor %}
+    {% endblock %}
  	</head>
-	{% endblock %}
+ {% endblock %}
 	{% block body %}
 		<body>
 			{% block content %}
-				{% block views %}
-					{% for view, params in views %}
-						{% include view with params %}
-					{% endfor %}
-				{% endblock %}
+        {% block views %}
+          {% for view, params in views %}
+            {% include view with params %}
+				  {% endfor %}
+        {% endblock %}
 			{% endblock %}
 			{% block javascripts %}{% endblock %}
+      {% block autoload_javascripts %}
+        {% for script in assets.scripts %}
+          <script src="{{attire(script)}}"></script>
+        {% endfor %}
+      {% endblock %}
 		</body>
 	{% endblock %}
 </html>

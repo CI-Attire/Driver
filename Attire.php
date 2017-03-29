@@ -88,6 +88,7 @@ class Attire
   function __construct(array $options = [])
   {
     $this->CI =& get_instance();
+    $this->CI->load->helper('url');
 
     if (isset($options['loader']))
     {
@@ -112,21 +113,29 @@ class Attire
     {
       extract(self::intersect('name','path','template','layout', $options['theme']));
       $this->theme = new Theme($name, $path, $template, $layout);
+    }
 
-      if (isset($options['assets']))
-      {
-        $this->assetManager = new AssetManager($this->CI, $options['assets']);
-      }
+    if (isset($options['assets']))
+    {
+      extract(self::intersect('namespace','manifest','autoload', $options['assets']));
+      $this->assetManager = new AssetManager($namespace, $manifest, (array) $autoload);
     }
 
     $this->views = new Views;
 
     $extensions = [];
+
     $extensions['functions'] = $options['functions'] ?? [];
     $extensions['filters'] = $options['filters'] ?? [];
     $extensions['globals'] = $options['globals'] ?? [];
 
     $this->extensionManager = new ExtensionManager($extensions);
+  }
+
+  public function addAsset($filePath, $namespace='')
+  {
+    $this->assetManager->addAsset($filePath, $namespace);
+    return $this;
   }
 
   /**
@@ -143,6 +152,8 @@ class Attire
       $this->CI->benchmark->mark('Attire Render Time_start');
       // Set the asset manager
       $this->environment->addExtension($this->assetManager);
+      // Autoload Assets
+      $this->extensionManager->addGlobal('assets', $this->assetManager->getAutoload());
       // Set the extension manager
       $this->environment->addExtension($this->extensionManager);
       // Add all the stored views
