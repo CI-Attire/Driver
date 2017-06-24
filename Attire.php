@@ -1,5 +1,4 @@
-<?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+<?php defined('BASEPATH') or exit('No direct script access allowed');
 
 /**
  * CodeIgniter
@@ -14,17 +13,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @link      http://codeigniter.com
  * @since     Version 1.0.0
  */
+ use Attire\Lexer;
+ use Attire\Loader;
+ use Attire\Theme;
+ use Attire\Views;
+ use Attire\Environment;
+ use Attire\AssetManager;
+ use Attire\ExtensionManager;
 
- use Attire\Driver\Environment;
- use Attire\Driver\Lexer;
- use Attire\Driver\Loader;
- use Attire\Driver\Theme;
- use Attire\Driver\Views;
-
- use Attire\Libraries\AssetManager;
- use Attire\Libraries\ExtensionManager;
-
-/**
+ /**
  * CodeIgniter Attire
  *
  * Templating with this class is done by layering the standard CI view system and extending
@@ -40,174 +37,133 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  */
 class Attire
 {
-  /**
-   * @var \CI_Controller
-   */
-  private $CI;
+    /**
+     * @var \CI_Controller
+     */
+    private $CI;
 
-  /**
-   * @var \Twig_Loader
-   */
-  private $loader;
+    /**
+     * @var \Twig_Loader
+     */
+    private $loader;
 
-  /**
-   * @var \Twig_Environment
-   */
-  private $environment;
+    /**
+     * @var \Twig_Environment
+     */
+    private $environment;
 
-  /**
-   * @var \Attire\Driver\Theme
-   */
-  private $theme;
+    /**
+     * @var \Attire\Driver\Theme
+     */
+    private $theme;
 
-  /**
-   * @var \Twig_Lexer
-   */
-  private $lexer;
+    /**
+     * @var \Twig_Lexer
+     */
+    private $lexer;
 
-  /**
-   * @var \Attire\Driver\Views
-   */
-  private $views;
+    /**
+     * @var \Attire\Driver\Views
+     */
+    private $views;
 
-  /**
-   * @var \Attire\Managers\Asset
-   */
-  private $assetManager;
+    /**
+     * @var \Attire\Managers\Asset
+     */
+    private $assetManager;
 
-  /**
-   * @var \Attire\Managers\Extension
-   */
-  private $extensionManager;
+    /**
+     * @var \Attire\Managers\Extension
+     */
+    private $extensionManager;
 
-  /**
-   * Class constructor
-   *
-   * @param array $config library params
-   */
-  function __construct(array $options = [])
-  {
-    $this->CI =& get_instance();
+    /**
+     * Environment debug mode
+     * @var boolean
+     */
+    private static $debug = false;
 
-    if (isset($options['loader']))
+    /**
+     * Class constructor
+     *
+     * @param array $config library params
+     */
+    public function __construct(array $options = [])
     {
-      extract(self::intersect('paths','file_ext','root_path', $options['loader']));
-      $this->loader = new Loader($paths, $file_ext, $root_path);
+        $this->CI = & get_instance();
 
-      if (isset($options['environment']))
-      {
-        $this->environment = new Environment($this->loader, $options['environment']);
+        try {
+            $this->loader = new Loader($options['loader']);
+            $this->environment = new Environment($this->loader, $options['environment']);
 
-        extract(self::intersect('debug', $options['environment']));
-        ($debug !== FALSE) && $this->environment->addExtension(new \Twig_Extension_Debug);
+            if (self::$debug = $options['debug']) {
+                $this->environment->addExtension(new \Twig_Extension_Debug);
+            }
 
-        if (isset($options['lexer']))
-        {
-          $this->lexer = new Lexer($this->environment, $options['lexer']);
+            $this->lexer = new Lexer($this->environment, $options['lexer']);
+            $this->theme = new Theme($options['theme']);
+            $this->assetManager = new AssetManager($options['assets']);
+            $this->views = new Views();
+
+            $this->extensionManager = new ExtensionManager([
+              'functions' => $options['functions'],
+              'filters' => $options['filters'],
+              'globals' => $options['globals']
+            ]);
+        } catch (Exception $e) {
+            $this->show_error($e);
         }
-      }
     }
-
-    if (isset($options['theme']))
-    {
-      extract(self::intersect('name','path','template','layout', $options['theme']));
-      $this->theme = new Theme($name, $path, $template, $layout);
-    }
-
-    if (isset($options['assets']))
-    {
-      extract(self::intersect('namespace','manifest','autoload', $options['assets']));
-      $this->assetManager = new AssetManager($namespace, $manifest, (array) $autoload);
-    }
-
-    $this->views = new Views;
-
-    $extensions = [];
-
-    $extensions['functions'] = $options['functions'] ?? [];
-    $extensions['filters'] = $options['filters'] ?? [];
-    $extensions['globals'] = $options['globals'] ?? [];
-
-    $this->extensionManager = new ExtensionManager($extensions);
-  }
-
-  public function addAsset($filePath, $namespace='')
-  {
-    $this->assetManager->addAsset($filePath, $namespace);
-    return $this;
-  }
 
   /**
-	 * Render a template
-	 *
-	 * @param  array|string $views   A view or an array of views with parameters passed to the template
-	 * @param  boolean      $return  Output flag
-	 * @return string                The output as string if the return flag is set to TRUE
-	 */
-  public function render($views = NULL, array $params = [], $return = FALSE)
+     * Render a template
+     *
+     * @param  array|string $views   A view or an array of views with parameters passed to the template
+     * @param  boolean      $return  Output flag
+     * @return string                The output as string if the return flag is set to TRUE
+     */
+  public function render($views = null, array $params = [], $return = false)
   {
-    try
-    {
-      $this->CI->benchmark->mark('Attire Render Time_start');
-      // Set the asset manager
-      $this->environment->addExtension($this->assetManager);
-      // Autoload Assets
-      $this->extensionManager->addGlobal('assets', $this->assetManager->getAutoload());
-      // Set the extension manager
-      $this->environment->addExtension($this->extensionManager);
-      // Add all the stored views
-      foreach ((array) $views as $key => $value)
-      {
-        is_string($key)
-          && $this->views->add($key, $value)
-          || $this->views->add($value, $params);
+      try {
+          $this->CI->benchmark->mark('Attire Render Time_start');
+          // Set the asset manager
+          $this->environment->addExtension($this->assetManager);
+          // Autoload Assets
+          $this->extensionManager->addGlobal('assets', $this->assetManager->getAutoload());
+          // Set the extension manager
+          $this->environment->addExtension($this->extensionManager);
+          // Add all the stored views
+          foreach ((array) $views as $key => $value) {
+              is_string($key)
+                && $this->views->add($key, $value)
+                || $this->views->add($value, $params);
+          }
+
+          if ($this->theme !== null) {
+              $theme_path = $this->theme->getPath();
+              $namespace  = $this->theme->getNamespace();
+              $layout     = $this->theme->getLayout();
+              $master     = $this->theme->getTemplate();
+              $template   = $layout !== false ? $layout : $master;
+
+              $this->loader->addPath($this->theme->getMainThemePath(), 'attire'); // @general template path
+              $this->loader->addPath($theme_path, $namespace); // @custom themplate path
+
+              $environment = $this->environment->loadTemplate("@{$namespace}/{$template}");
+
+              $output = $environment->render([
+                'views' => $this->views->getStored(),
+                'master' => "@{$namespace}/{$master}"
+              ]);
+          }
+
+          $this->CI->benchmark->mark('Attire Render Time_end');
+
+          return $return !== false ? $output : $this->CI->output->set_output($output);
+
+      } catch (\Exception $e) {
+          $this->show_error($e);
       }
-
-      if ($this->theme !== NULL)
-      {
-        $theme_path = $this->theme->getPath();
-        $namespace  = $this->theme->getNamespace();
-        $layout     = $this->theme->getLayout();
-        $master     = $this->theme->getTemplate();
-        $template   = $layout !== FALSE ? $layout : $master;
-
-        $this->loader->addPath($this->theme->getMainThemePath(), 'attire'); // @general template path
-        $this->loader->addPath($theme_path, $namespace); // @custom themplate path
-
-        $environment = $this->environment->loadTemplate("@{$namespace}/{$template}");
-
-        $output = $environment->render([
-          'views'  => $this->views->getStored(),
-          'master' => "@{$namespace}/{$master}"
-        ]);
-      }
-
-      $this->CI->benchmark->mark('Attire Render Time_end');
-
-      return $return !== FALSE ? $output : $this->CI->output->set_output($output);
-    }
-    catch (\Exception $e)
-    {
-      $this->_showError($e);
-    }
-  }
-
-  /**
-   * Intersect the values of an array based on the predecesors,
-   * if a variable is not defined inside the array then his value should be null.
-   *
-   * @param  array $params  ...
-   * @return array          The array intersected
-   */
-  private static function intersect(...$params)
-  {
-    $options = array_pop($params);
-
-    foreach ($params as $key)
-    {
-      (! key_exists($key, $options)) && $options[$key] = NULL;
-    }
-    return array_intersect_key($options, array_flip($params));
   }
 
   /**
@@ -215,15 +171,19 @@ class Attire
   *
   * @param \Error $e
   */
-  private function _showError($e)
+  private function show_error(\Exception $e)
   {
-    if (is_cli()) { throw $e; }
-    list($trace) = $e->getTrace();
-    $message = "Exception on: "
-      .$e->getTemplateFile()
-      ." with the message:<br>"
-      ."&emsp;".$e->getMessage();
-    return show_error($message, 500, 'Attire error');
+      if (is_cli()) {
+          throw $e;
+      } else {
+          list($trace) = $e->getTrace();
+
+          return show_error(sprintf("Exception on: %s <br>%s",
+              $e->getTemplateFile(),
+              $e->getMessage()
+            ), 500, 'Attire::Error'
+          );
+      }
   }
 }
 /* End of file Attire.php */

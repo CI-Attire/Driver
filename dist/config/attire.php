@@ -1,34 +1,14 @@
-<?php defined('BASEPATH') OR exit('No direct script access allowed');
+<?php defined('BASEPATH') or exit('No direct script access allowed');
 
 /*
 |--------------------------------------------------------------------------
-| Loader
+| Debug
 |--------------------------------------------------------------------------
 |
-| Loaders are responsible for loading templates from a resource.
-|
-| Here you may specify the directory paths to your stored views (relative
-| to your application path).
+| Enable debug mode.
 |
 */
-$config['loader'] = [
-	'paths' 		=> ['views/'],
-	'file_ext'  => '.twig',
-];
-
-/*
-|--------------------------------------------------------------------------
-| Theme
-|--------------------------------------------------------------------------
-|
-| Here you may specify the directory path to your stored themes (relative
-| to your application path).
-|
-*/
-$config['theme'] = [
-	'name' => FALSE,
-	'path' => 'themes/'
-];
+$config['debug'] = false;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,13 +27,43 @@ $config['theme'] = [
 |
 */
 $config['environment'] = [
-	'charset'             => 'UTF-8',
-	'base_template_class' => 'Twig_Template',
-	'cache'               => FALSE,
-	'auto_reload'         => FALSE,
-	'strict_variables'    => FALSE,
-	'autoescape'          => 'html',
-	'debug'               => FALSE
+    'charset'             => 'UTF-8',
+    'base_template_class' => 'Twig_Template',
+    'cache'               => false,
+    'auto_reload'         => false,
+    'strict_variables'    => false,
+    'autoescape'          => 'html',
+    'debug'               => $config['debug'] ?? false
+];
+
+/*
+|--------------------------------------------------------------------------
+| Loader
+|--------------------------------------------------------------------------
+|
+| Loaders are responsible for loading templates from a resource.
+|
+| Here you may specify the directory paths to your stored views (relative
+| to your application path).
+|
+*/
+$config['loader'] = [
+    'paths'    => ['/views'],
+    'file_ext' => '.twig',
+];
+
+/*
+|--------------------------------------------------------------------------
+| Theme
+|--------------------------------------------------------------------------
+|
+| Here you may specify the directory path to your stored themes (relative
+| to your application path).
+|
+*/
+$config['theme'] = [
+    'name' => false,
+    'path' => '/themes'
 ];
 
 /*
@@ -69,7 +79,7 @@ $config['environment'] = [
 | 						your asset files.
 | * namespace: prefix of your assets path (default: NULL)
 |
-| Example:
+| Examples:
 |
 |		# autoload
 |		$config['assets']['autoload'] = [
@@ -106,7 +116,7 @@ $config['assets'] = [];
 |    'interpolation' => array('#{', '}'),
 | ];
 */
-$config['lexer'] = NULL;
+$config['lexer'] = null;
 
 /*
 |--------------------------------------------------------------------------

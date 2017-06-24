@@ -1,4 +1,6 @@
 <?php
 namespace Attire\Exceptions;
 
-class Manager extends \Exception {}
+class Manager extends \Exception
+{
+}

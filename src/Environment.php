@@ -1,5 +1,5 @@
 <?php
-namespace Attire\Driver;
+namespace Attire;
 
 /**
  * CodeIgniter
@@ -15,8 +15,6 @@ namespace Attire\Driver;
  * @since     Version 1.0.0
  */
 
-use \Attire\Driver\Loader;
-
 /**
  * Attire Environment
  *
@@ -28,13 +26,16 @@ use \Attire\Driver\Loader;
  */
 class Environment extends \Twig_Environment
 {
-  /**
-   * Class constructor
-   *
-   * @param ---
-   */
-  public function __construct(Loader $loader, array $options = [])
-  {
-    parent::__construct($loader, $options);
-  }
+    use Traits\FileKit;
+    use Traits\Extractor;
+
+    /**
+     * Class constructor
+     *
+     * @param ---
+     */
+    public function __construct(Loader $loader, array $options = [])
+    {
+        parent::__construct($loader, $options);
+    }
 }

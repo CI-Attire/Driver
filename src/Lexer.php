@@ -1,5 +1,5 @@
 <?php
-namespace Attire\Driver;
+namespace Attire;
 
 /**
  * CodeIgniter
@@ -15,8 +15,6 @@ namespace Attire\Driver;
  * @since     Version 1.0.0
  */
 
-use \Attire\Driver\Environment;
-
 /**
  * Attire Lexer
  *
@@ -28,16 +26,15 @@ use \Attire\Driver\Environment;
  */
 class Lexer extends \Twig_Lexer
 {
-  /**
-   * Class constructor
-   *
-   * @param ---
-   */
-  function __construct(Environment $environment, $options = NULL)
-  {
-    if ($options !== NULL)
+    /**
+     * Class constructor
+     *
+     * @param ---
+     */
+    public function __construct(Environment $environment, $options = null)
     {
-      parent::__construct($environment, $options);
+      if (is_array($options)) {
+          parent::__construct($environment, $options);
+      }
     }
-  }
 }
