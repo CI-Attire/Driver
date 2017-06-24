@@ -39,15 +39,19 @@ class Loader extends \Twig_Loader_Filesystem
      *
      * @param ---
      */
-    public function __construct(array $options = [])
-    {
-        extract(self::intersect('paths', 'file_ext', 'root_path', $options));
+     public function __construct(array $options = [])
+     {
+         extract(self::intersect('paths', 'file_ext', 'root_path', $options));
 
-        self::setFileExtension($file_ext);
-        self::setRootPath($root_path);
+         self::setFileExtension($file_ext);
+         self::setRootPath($root_path);
 
-        parent::__construct($paths, self::$root_path);
-    }
+         $cleanPaths = function($path){
+           return ltrim($path,'/');
+         };
+
+         parent::__construct(array_map($cleanPaths, $paths), self::$root_path);
+     }
 
     /**
      * Get the root path
