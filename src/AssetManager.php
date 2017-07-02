@@ -64,7 +64,7 @@ class AssetManager extends \Twig_Extension
 
         self::setNamespace($namespace);
         self::setManifest($manifest);
-        self::setAutoload($autoload);
+        self::setAutoload((array) $autoload);
     }
 
     public static function setNamespace($namespace)
@@ -86,8 +86,22 @@ class AssetManager extends \Twig_Extension
         self::$throw_error = $state;
     }
 
-    public static function addAsset($filePath, $namespace)
+    public static function addAsset($filePath, $namespace=NULL)
     {
+        if (is_null($namespace))
+        {
+          $info = new \SplFileInfo($filePath);
+
+          switch ($info->getExtension())
+          {
+            case 'js':
+              $namespace = 'scripts';
+              break;
+            case 'css':
+              $namespace = 'styles';
+              break;
+          }
+        }
         self::$autoload[$namespace][] = $filePath;
     }
 
