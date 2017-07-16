@@ -22,18 +22,13 @@
  use Attire\ExtensionManager;
 
  /**
- * CodeIgniter Attire
+ * Templating with this class is done by layering the standard CI view system.
+ * The basic idea is that for every single CI view there are individual
+ * CSS, Javascript and View files that correlate to it and this structure is
+ * conected with the Twig Engine.
  *
- * Templating with this class is done by layering the standard CI view system and extending
- * it with Sprockets-PHP (pipeline asset management). The basic idea is that for every single
- * CI view there are individual CSS, Javascript and View files that correlate to it and
- * this structure is conected with the Twig Engine.
- *
- * @package    CodeIgniter
- * @subpackage Drivers
- * @category   Driver
  * @author     David Sosa Valdes
- * @link       https://github.com/davidsosavaldes/Attire
+ * @link       https://github.com/CI-Attire/Driver
  */
 class Attire
 {
@@ -53,27 +48,27 @@ class Attire
     private $environment;
 
     /**
-     * @var \Attire\Driver\Theme
-     */
-    private $theme;
-
-    /**
      * @var \Twig_Lexer
      */
     private $lexer;
 
     /**
-     * @var \Attire\Driver\Views
+     * @var \Attire\Theme
+     */
+    private $theme;
+
+    /**
+     * @var \Attire\Views
      */
     private $views;
 
     /**
-     * @var \Attire\Managers\Asset
+     * @var \Attire\AssetManager
      */
     private $assetManager;
 
     /**
-     * @var \Attire\Managers\Extension
+     * @var \Attire\ExtensionManager
      */
     private $extensionManager;
 
@@ -86,7 +81,8 @@ class Attire
     /**
      * Class constructor
      *
-     * @param array $config library params
+     * @param array $options Library params
+     * @return void
      */
     public function __construct(array $options = [])
     {
@@ -96,7 +92,7 @@ class Attire
             $this->loader = new Loader($options['loader']);
             $this->environment = new Environment($this->loader, $options['environment']);
 
-            if (self::$debug = $options['debug']) {
+            if (isset($options['debug']) && (self::$debug = $options['debug'])) {
                 $this->environment->addExtension(new \Twig_Extension_Debug);
             }
 
@@ -118,9 +114,10 @@ class Attire
   /**
      * Render a template
      *
-     * @param  array|string $views   A view or an array of views with parameters passed to the template
-     * @param  boolean      $return  Output flag
-     * @return string                The output as string if the return flag is set to TRUE
+     * @param  mixed[]  $views   A view or an array of views with parameters passed to the template.
+     * @param  array    $params  A set of parameters passed to the views.
+     * @param  bool     $return  Output flag.
+     * @return string            The output as string if the return flag is set to TRUE.
      */
   public function render($views = null, array $params = [], $return = false)
   {
@@ -187,4 +184,4 @@ class Attire
   }
 }
 /* End of file Attire.php */
-/* Location: ./application/libraries/attire/Attire.php */
+/* Location: ./application/libraries/Attire/Attire.php */

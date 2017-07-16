@@ -16,13 +16,12 @@ namespace Attire;
  */
 
  /**
- * Attire Views
+ * Class that storages all the rendered views.
  *
  * @package    CodeIgniter
- * @subpackage Drivers
  * @category   Driver
  * @author     David Sosa Valdes
- * @link       https://github.com/davidsosavaldes/Attire
+ * @link       https://github.com/CI-Attire/Driver
  */
 class Views
 {
@@ -36,6 +35,8 @@ class Views
 
     /**
      * Class constructor
+     *
+     * @return void
      */
     public function __construct()
     {
@@ -56,7 +57,8 @@ class Views
      * Add a view
      *
      * @param string $view   View filename
-     * @param array  $params View params
+     * @param array  $params View parameters
+     * @return self
      */
     public function add($view, array $params = [])
     {
@@ -68,7 +70,8 @@ class Views
     /**
      * Remove specific view
      *
-     * @param string $view View name
+     * @param string $view View filename
+     * @return self
      */
     public function remove($view)
     {
@@ -79,6 +82,8 @@ class Views
 
     /**
      * Clear all the stored views
+     *
+     * @return self
      */
     public function reset()
     {

@@ -16,13 +16,12 @@ namespace Attire;
  */
 
 /**
- * Attire Loader
+ * Attire Loader class
  *
  * @package    CodeIgniter
- * @subpackage Drivers
  * @category   Driver
  * @author     David Sosa Valdes
- * @link       https://github.com/davidsosavaldes/Attire
+ * @link       https://github.com/CI-Attire/Driver
  */
 class Loader extends \Twig_Loader_Filesystem
 {
@@ -30,14 +29,15 @@ class Loader extends \Twig_Loader_Filesystem
     use Traits\Extractor;
 
     /**
-     * @var {String} Root Path (default: APPPATH)
+     * @var string Root path (default: APPPATH)
      */
     private static $root_path = APPPATH;
 
     /**
      * Class constructor
      *
-     * @param ---
+     * @param array $options Class arguments (paths, file_ext, root_path)
+     * @return void
      */
      public function __construct(array $options = [])
      {
@@ -56,19 +56,18 @@ class Loader extends \Twig_Loader_Filesystem
     /**
      * Get the root path
      *
-     * @param {String} $path New path
-     * @return {boolean} The root path
+     * @param string $path New path
+     * @return void
      */
     public static function setRootPath($path)
     {
         (! is_null($path)) && self::$root_path = $path;
-        return self::$root_path;
     }
 
     /**
      * Get the root path
      *
-     * @return {String} The root path
+     * @return string Get root path
      */
     public static function getRootPath()
     {

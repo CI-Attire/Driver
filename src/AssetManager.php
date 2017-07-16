@@ -21,10 +21,9 @@ use \Attire\Exceptions\Manager as ManagerException;
  * Attire AssetManager
  *
  * @package    CodeIgniter
- * @subpackage Drivers
  * @category   Driver
  * @author     David Sosa Valdes
- * @link       https://github.com/davidsosavaldes/Attire
+ * @link       https://github.com/CI-Attire/Driver
  */
 class AssetManager extends \Twig_Extension
 {
@@ -33,30 +32,33 @@ class AssetManager extends \Twig_Extension
 
     /**
      * Asset Manifest is a set of indexed assets
+     * @var array
      */
     private static $manifest = [];
 
     /**
      * Namespace path
+     * @var null|string
      */
     private static $namespace = null;
 
     /**
      * Autoload Assets
+     * @var array
      */
     private static $autoload = [];
 
     /**
      * Throw Error Flag
+     * @var boolean
      */
     private static $throw_error = TRUE;
 
     /**
      * Class constructor
      *
-     * @param {string} $namespace  Asset path prefix
-     * @param {mixed}  $manifest   Set of defined asset paths or the file that contains this paths
-     * @param {array}  $autoload   Set of included assets directly in the layout
+     * @param array $options Class arguments ('namespace, manifest, autoload')
+     * @return void
      */
     public function __construct(array $options = [])
     {
@@ -67,11 +69,23 @@ class AssetManager extends \Twig_Extension
         self::setAutoload((array) $autoload);
     }
 
+    /**
+     * Set namespace
+     *
+     * @param string $namespace
+     * @return void
+     */
     public static function setNamespace($namespace)
     {
         self::$namespace = self::rtrim($namespace);
     }
 
+    /**
+     * Set manifest
+     *
+     * @param string|array $manifest Manifest filepath or an array
+     * @return void
+     */
     public static function setManifest($manifest)
     {
         if (is_array($manifest)) {
@@ -81,11 +95,24 @@ class AssetManager extends \Twig_Extension
         }
     }
 
+    /**
+     * Set debug flag
+     *
+     * @param boolean $state Default: TRUE
+     * @return void
+     */
     public function debug($state = true)
     {
         self::$throw_error = $state;
     }
 
+    /**
+     * Add an asset to the manager
+     *
+     * @param string      $filePath  Asset file path
+     * @param null|string $namespace Extenstion namespace (js, css)
+     * @return void
+     */
     public static function addAsset($filePath, $namespace=NULL)
     {
         if (is_null($namespace))
@@ -105,19 +132,41 @@ class AssetManager extends \Twig_Extension
         self::$autoload[$namespace][] = $filePath;
     }
 
+    /**
+     * Asset autoloader setter
+     *
+     * @param array $autoload
+     * @return void
+     */
     public function setAutoload(array $autoload)
     {
         self::$autoload = $autoload;
     }
 
+    /**
+     * Get the autoloader
+     *
+     * @return array
+     */
     public function getAutoload()
     {
         return self::$autoload;
     }
 
+    /**
+     * Get the manager functions
+     *
+     * @return array
+     */
     public function getFunctions()
     {
         return [
+          /**
+           * Get the asset version based on the manifest filename
+           *
+           * @param string $filename
+           * @return string Filename path (versioned)
+           */
           new \Twig_SimpleFunction('attire', function ($filename) {
               $fileExists = isset(self::$manifest[$filename]);
 

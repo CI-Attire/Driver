@@ -17,13 +17,12 @@ namespace Attire;
  use \Attire\Exceptions\Theme as ThemeException;
 
  /**
- * Attire Theme
+ * Attire Theme class
  *
  * @package    CodeIgniter
- * @subpackage Drivers
  * @category   Driver
  * @author     David Sosa Valdes
- * @link       https://github.com/davidsosavaldes/Attire
+ * @link       https://github.com/CI-Attire/Driver
  */
 class Theme
 {
@@ -56,21 +55,21 @@ class Theme
 
     /**
     * Identifier of the main namespace.
+    * @var string
     */
     const MAIN_NAMESPACE = 'theme';
 
     /**
     * Identifier of the main theme name.
+    * @var string
     */
     const MAIN_THEMENAME = 'attire';
 
     /**
     * Class constructor
     *
-    * @param  string $name      Theme name.
-    * @param  string $path      Default path as a string.
-    * @param  string $template  Master template.
-    * @param  string $layout    Slave layout.
+    * @param  array $options Class arguments (name, path, tehmplate, layout)
+    * @return void
     */
     public function __construct(array $options = [])
     {
@@ -84,7 +83,9 @@ class Theme
     }
 
     /**
+     * Get Namespace
      *
+     * @return string
      */
     public static function getNamespace()
     {
@@ -92,7 +93,9 @@ class Theme
     }
 
     /**
+     * Get main theme path
      *
+     * @return string
      */
     public static function getMainThemePath()
     {
@@ -104,9 +107,10 @@ class Theme
     }
 
     /**
-     * Get the theme name
+     * Set the theme name
      *
-     * @return string Theme name
+     * @param string $name Theme name
+     * @return void
      */
     public static function setName($name)
     {
@@ -117,6 +121,7 @@ class Theme
      * Set theme default path (without name)
      *
      * @param string $path Theme path
+     * @return void
      */
     public static function setPath($path)
     {
@@ -138,7 +143,10 @@ class Theme
      */
     public static function getPath()
     {
-        return sprintf('%s%s%s', Loader::getRootPath(), self::$path, self::$name);
+        return sprintf(
+          '%s%s%s',
+          Loader::getRootPath(), self::$path, self::$name
+        );
     }
 
     /**
@@ -149,7 +157,8 @@ class Theme
     public static function setTemplate($template)
     {
         if ($template !== null) {
-            (! self::haveExtension($template)) && $template .= self::getFileExtension();
+            (! self::haveExtension($template))
+              && $template .= self::getFileExtension();
             self::$template = $template;
         }
     }
@@ -157,7 +166,7 @@ class Theme
     /**
      * Get the current template
      *
-     * @return string Return the actual path if exist else FALSE
+     * @return string|boolean Return the actual path if exist else FALSE
      */
     public static function getTemplate()
     {
@@ -167,9 +176,8 @@ class Theme
     /**
      * Set a new layout
      *
-     * @param string $layout    Layout filename path
-     * @param string $directory Directory where the layout is stored (relative to theme path)
-     *
+     * @param string $layout  Layout filename path
+     * @return void
      */
     public static function setLayout($layout)
     {
@@ -198,7 +206,7 @@ class Theme
     /**
      * Get the current layout
      *
-     * @return boolean|string Return the actual path if exist else FALSE
+     * @return string|boolean Return the actual path if exist else FALSE
      */
     public static function getLayout()
     {

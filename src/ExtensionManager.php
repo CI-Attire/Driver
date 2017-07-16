@@ -16,24 +16,45 @@ namespace Attire;
  */
 
 /**
- * Attire Extension
+ * Attire Extension Manager class
  *
  * @package    CodeIgniter
- * @subpackage Drivers
  * @category   Driver
  * @author     David Sosa Valdes
- * @link       https://github.com/davidsosavaldes/Attire
+ * @link       https://github.com/CI-Attire/Driver
  */
 class ExtensionManager extends \Twig_Extension
 {
+    /**
+     * Global functions
+     * @var array
+     */
     private static $functions = [];
 
+    /**
+     * Global filters
+     * @var array
+     */
     private static $filters = [];
 
+    /**
+     * Global variables
+     * @var array
+     */
     private static $globals = [];
 
+    /**
+     * Extensions available
+     * @var array
+     */
     public static $extensions = ['filters','globals','functions'];
 
+    /**
+     * Class constructor
+     *
+     * @param array $params Class arguments
+     * @return void
+     */
     public function __construct(array $params = [])
     {
         foreach ($params as $key => $objects) {
@@ -51,41 +72,88 @@ class ExtensionManager extends \Twig_Extension
         }
     }
 
+    /**
+     * Get filters
+     *
+     * @return array
+     */
     public function getFilters()
     {
         return self::$filters;
     }
 
+    /**
+     * Get Global variables
+     *
+     * @return array
+     */
     public function getGlobals()
     {
         return self::$globals;
     }
 
+    /**
+     * Get functions
+     *
+     * @return array
+     */
     public function getFunctions()
     {
         return self::$functions;
     }
 
+    /**
+     * Get extension manager name
+     *
+     * @return string
+     */
     public function getName()
     {
         return 'attire_extension_manager';
     }
 
+    /**
+     * Add a filter
+     *
+     * @param string $name Filter name
+     * @param callback $callback Callback function
+     * @return void
+     */
     public static function addFilter($name, $callback)
     {
         self::$filters[] = new \Twig_SimpleFilter($name, $callback);
     }
 
+    /**
+     * Add a global variable
+     *
+     * @param string $name Variable name
+     * @param mixed $callback Variable value
+     * @return void
+     */
     public static function addGlobal($name, $callback)
     {
         self::$globals[$name] = $callback;
     }
 
+    /**
+     * Add a function
+     *
+     * @param string $name function name
+     * @param mixed $callback Callback function
+     * @return void
+     */
     public static function addFunction($name, $callback)
     {
         self::$functions[] = new \Twig_SimpleFunction($name, $callback);
     }
 
+    /**
+     * Add multiple filters
+     *
+     * @param array $filters Set of filters
+     * @return void
+     */
     public static function addFilters(array $filters)
     {
         foreach ($filters as $name => $callback) {
@@ -96,6 +164,12 @@ class ExtensionManager extends \Twig_Extension
         }
     }
 
+    /**
+     * Add multiple global variables
+     *
+     * @param array $globals Set of global variables
+     * @return void
+     */
     public static function addGlobals(array $globals)
     {
         foreach ($globals as $name => $callback) {
@@ -103,6 +177,12 @@ class ExtensionManager extends \Twig_Extension
         }
     }
 
+    /**
+     * Add multiple functions
+     *
+     * @param array $functions Set of functions
+     * @return void
+     */
     public static function addFunctions(array $functions)
     {
         foreach ($functions as $name => $callback) {

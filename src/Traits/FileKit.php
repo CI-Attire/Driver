@@ -2,13 +2,15 @@
 namespace Attire\Traits;
 
 /**
- * Attire File Extension Trait
+ * Filekit
+ *
+ * Used to define the file relative paths and extensions
  *
  * @package    Attire
  * @subpackage Drivers
  * @category   Traits
  * @author     David Sosa Valdes
- * @link       https://github.com/davidsosavaldes/Attire
+ * @link       https://github.com/CI-Attire/Driver
  */
 trait FileKit
 {

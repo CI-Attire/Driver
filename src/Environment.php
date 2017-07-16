@@ -16,13 +16,12 @@ namespace Attire;
  */
 
 /**
- * Attire Environment
+ * Attire Environment class
  *
  * @package    CodeIgniter
- * @subpackage Drivers
  * @category   Driver
  * @author     David Sosa Valdes
- * @link       https://github.com/davidsosavaldes/Attire
+ * @link       https://github.com/CI-Attire/Driver
  */
 class Environment extends \Twig_Environment
 {
@@ -32,7 +31,9 @@ class Environment extends \Twig_Environment
     /**
      * Class constructor
      *
-     * @param ---
+     * @param \Attire\Loader $loader
+     * @param array $options Class arguments
+     * @return void
      */
     public function __construct(Loader $loader, array $options = [])
     {

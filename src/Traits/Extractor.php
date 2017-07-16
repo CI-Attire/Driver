@@ -2,13 +2,13 @@
 namespace Attire\Traits;
 
 /**
- * Attire Parameter Extractor Trait
+ * Parameter Extractor
  *
  * @package    Attire
  * @subpackage Drivers
  * @category   Traits
  * @author     David Sosa Valdes
- * @link       https://github.com/davidsosavaldes/Attire
+ * @link       https://github.com/CI-Attire/Driver
  */
 trait Extractor
 {

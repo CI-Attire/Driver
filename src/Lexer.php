@@ -16,20 +16,20 @@ namespace Attire;
  */
 
 /**
- * Attire Lexer
+ * Attire Lexer class
  *
  * @package    CodeIgniter
- * @subpackage Drivers
  * @category   Driver
  * @author     David Sosa Valdes
- * @link       https://github.com/davidsosavaldes/Attire
+ * @link       https://github.com/CI-Attire/Driver
  */
 class Lexer extends \Twig_Lexer
 {
     /**
      * Class constructor
      *
-     * @param ---
+     * @param \Twig\Environment $environment
+     * @param null|array $options \Twig_Lexer arguments
      */
     public function __construct(Environment $environment, $options = null)
     {
