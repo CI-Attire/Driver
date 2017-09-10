@@ -4,11 +4,11 @@
   "description": "Attire Driver is an implementation of Twig template engine for CodeIgniter",
   "require": {
     "php": ">=5.2.4",
-    "composer/installers": "^1.2",
-    "twig/twig": "^1.27"
+    "composer/installers": ">=1.2",
+    "twig/twig": ">=1.27"
   },
   "require-dev": {
-    "codeigniter/framework": "^3.1"
+    "codeigniter/framework": ">=3.1"
   },
   "license": "MIT",
   "authors": [
