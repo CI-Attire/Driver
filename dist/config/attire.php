@@ -48,7 +48,7 @@ $config['environment'] = [
 |
 */
 $config['loader'] = [
-    'paths'    => ['/views'],
+    'paths'    => ['views'],
     'file_ext' => '.twig',
 ];
 
@@ -62,8 +62,8 @@ $config['loader'] = [
 |
 */
 $config['theme'] = [
-    'name' => false,
-    'path' => '/themes'
+    'name' => 'attire',
+    'path' => 'themes'
 ];
 
 /*
