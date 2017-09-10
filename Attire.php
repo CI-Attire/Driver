@@ -176,7 +176,7 @@ class Attire
           list($trace) = $e->getTrace();
 
           return show_error(sprintf("Exception on: %s <br>%s",
-              $e->getTemplateFile(),
+              ($e instanceof \Twig_Error_Loader)? 'Attire\Loader' : $e->getTemplateFile(),
               $e->getMessage()
             ), 500, 'Attire::Error'
           );
