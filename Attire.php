@@ -125,10 +125,15 @@ class Attire
           $this->CI->benchmark->mark('Attire Render Time_start');
           // Set the asset manager
           $this->environment->addExtension($this->assetManager);
-          // Autoload Assets
-          $this->extensionManager->addGlobal('assets', $this->assetManager->getAutoload());
           // Set the extension manager
           $this->environment->addExtension($this->extensionManager);
+							   // Autoload Assets
+          $this->environment->addGlobal('assets', $this->assetManager->getAutoload());
+          // Temporary solution for Global variables
+								  foreach($this->extensionManager->getGlobals() as $key => $value)
+										{ 
+                $this->environment->addGlobal($key, $value);
+          }
           // Add all the stored views
           foreach ((array) $views as $key => $value) {
               is_string($key)
@@ -170,17 +175,18 @@ class Attire
   */
   private function show_error(\Exception $e)
   {
-      if (is_cli()) {
-          throw $e;
-      } else {
-          list($trace) = $e->getTrace();
+				  throw $e;
+      //if (is_cli()) {
+      //    throw $e;
+      //} else {
+      //    list($trace) = $e->getTrace();
 
-          return show_error(sprintf("Exception on: %s <br>%s",
-              ($e instanceof \Twig_Error_Loader)? 'Attire\Loader' : $e->getTemplateFile(),
-              $e->getMessage()
-            ), 500, 'Attire::Error'
-          );
-      }
+      //    return show_error(sprintf("Exception on: %s <br>%s",
+      //        ($e instanceof \Twig_Error_Loader)? 'Attire\Loader' : $e->getTemplateFile(),
+      //        $e->getMessage()
+      //      ), 500, 'Attire::Error'
+      //    );
+      //}
   }
 }
 /* End of file Attire.php */
