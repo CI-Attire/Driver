@@ -23,31 +23,31 @@ namespace Attire;
  * @author     David Sosa Valdes
  * @link       https://github.com/CI-Attire/Driver
  */
-class ExtensionManager extends \Twig_Extension
+class ExtensionManager extends \Twig_Extension implements \Twig_ExtensionInterface
 {
     /**
      * Global functions
      * @var array
      */
-    private static $functions = [];
+    protected static $functions = [];
 
     /**
      * Global filters
      * @var array
      */
-    private static $filters = [];
+    protected static $filters = [];
 
     /**
      * Global variables
      * @var array
      */
-    private static $globals = [];
+    protected static $globals = [];
 
     /**
      * Extensions available
      * @var array
      */
-    public static $extensions = ['filters','globals','functions'];
+    public static $extensions = ['filters', 'globals', 'functions'];
 
     /**
      * Class constructor
@@ -59,17 +59,18 @@ class ExtensionManager extends \Twig_Extension
     {
         foreach ($params as $key => $objects) {
             switch ($key) {
-                case 'functions':
-                  self::addFunctions($objects);
-                  break;
-                case 'filters':
-                  self::addFilters($objects);
-                  break;
-                case 'globals':
-                  self::addGlobals($objects);
-                  break;
-            }
+              case 'functions':
+                self::addFunctions($objects);
+                break;
+              case 'filters':
+                self::addFilters($objects);
+                break;
+              case 'globals':
+                self::addGlobals($objects);
+                break;
+          }
         }
+        parent::__construct();
     }
 
     /**

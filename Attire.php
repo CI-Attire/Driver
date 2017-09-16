@@ -127,12 +127,11 @@ class Attire
           $this->environment->addExtension($this->assetManager);
           // Set the extension manager
           $this->environment->addExtension($this->extensionManager);
-							   // Autoload Assets
+          // Autoload Assets
           $this->environment->addGlobal('assets', $this->assetManager->getAutoload());
           // Temporary solution for Global variables
-								  foreach($this->extensionManager->getGlobals() as $key => $value)
-										{ 
-                $this->environment->addGlobal($key, $value);
+          foreach ($this->extensionManager->getGlobals() as $key => $value) {
+              $this->environment->addGlobal($key, $value);
           }
           // Add all the stored views
           foreach ((array) $views as $key => $value) {
@@ -162,7 +161,6 @@ class Attire
           $this->CI->benchmark->mark('Attire Render Time_end');
 
           return $return !== false ? $output : $this->CI->output->set_output($output);
-
       } catch (\Exception $e) {
           $this->show_error($e);
       }
@@ -175,7 +173,7 @@ class Attire
   */
   private function show_error(\Exception $e)
   {
-				  throw $e;
+      throw $e;
       //if (is_cli()) {
       //    throw $e;
       //} else {
