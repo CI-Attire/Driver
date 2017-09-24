@@ -27,13 +27,13 @@ $config['debug'] = false;
 |
 */
 $config['environment'] = [
-    'charset'             => 'UTF-8',
+    'charset' => 'UTF-8',
     'base_template_class' => 'Twig_Template',
-    'cache'               => false,
-    'auto_reload'         => false,
-    'strict_variables'    => false,
-    'autoescape'          => 'html',
-    'debug'               => $config['debug'] ?? false
+    'cache' => false,
+    'auto_reload' => false,
+    'strict_variables' => false,
+    'autoescape' => 'html',
+    'debug' => $config['debug'] ?? false
 ];
 
 /*
@@ -48,7 +48,7 @@ $config['environment'] = [
 |
 */
 $config['loader'] = [
-    'paths'    => ['views'],
+    'paths' => ['views'],
     'file_ext' => '.twig',
 ];
 
@@ -133,11 +133,18 @@ $config['lexer'] = null;
 |			},
 | 	);
 |
+|  // if you want to load the function without extending it you can add it
+|  // as a string like:
+|
+|  $config['functions'] = array(
+|    'base_url'
+|  );
+|
 | Call the functions in Twig environment:
 |
 |	{{ base_url('foo_fighters') }}
 |
-| Remember to load/autoload the library or helper bafore the render method.
+| NOTES: Remember to load/autoload the library or helper before the render method.
 |
 */
 $config['functions'] = [];
@@ -179,10 +186,18 @@ $config['globals'] = [];
 |				return base_url($path);
 |			},
 | 	);
+|  // if you want to load the filter without extending it you can add it
+|  // as a string like:
+|
+|  $config['functions'] = array(
+|    'base_url'
+|  );
 |
 | Call the functions in the template:
 |
 |	{{ 'foo_fighters' | base_url }}
+|
+| NOTES: Remember to load/autoload the library or helper before the render method.
 |
 */
 $config['filters'] = [];
