@@ -27,7 +27,7 @@ use Attire\Exceptions\Manager as ManagerException;
  *
  * @see       https://github.com/CI-Attire/Driver
  */
-class AssetManager extends \Twig_Extension implements \Twig_Extension_GlobalsInterface
+class AssetManager extends \Twig_Extension
 {
     use Traits\FileKit;
     use Traits\Extractor;
