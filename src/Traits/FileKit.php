@@ -1,55 +1,59 @@
 <?php
+
 namespace Attire\Traits;
 
 /**
- * Filekit
+ * Filekit.
  *
  * Used to define the file relative paths and extensions
  *
- * @package    Attire
- * @subpackage Drivers
- * @category   Traits
- * @author     David Sosa Valdes
- * @link       https://github.com/CI-Attire/Driver
+ * @category  Traits
+ * @author    David Sosa Valdes
+ * @see       https://github.com/CI-Attire/Driver
  */
 trait FileKit
 {
     /**
-     * File extension
+     * File extension.
+     *
      * @var string
      */
     private static $ext = '.twig';
 
     /**
-     * Right trim a file path
+     * Right trim a file path.
      *
-     * @param  string  $path 			File path
-     * @param  string  $delimiter Path delimiter
-     * @return boolean       			Cleaned path
+     * @param string $path      File path
+     * @param string $delimiter Path delimiter
+     *
+     * @return bool Cleaned path
      */
-    public static function rtrim($path, $delimiter='/')
+    public static function rtrim($path, $delimiter = '/')
     {
         return rtrim($path, $delimiter);
     }
 
     /**
-     * Check if file have extension
+     * Check if file have extension.
      *
-     * @param  string  $file Filename
-     * @return boolean       TRUE if the file have extension defined and is valid else FALSE
+     * @param string $file Filename
+     *
+     * @return bool TRUE if the file have extension defined and is valid else FALSE
      */
     public static function haveExtension($file)
     {
         $info = new \SplFileInfo($file);
         $ext = $info->getExtension();
-        return (! empty($ext));
+
+        return !empty($ext);
     }
 
     /**
-     * Check if the file have a valid extension
+     * Check if the file have a valid extension.
      *
-     * @param  string  $ext File extension
-     * @return boolean      TRUE if is valid
+     * @param string $ext File extension
+     *
+     * @return bool TRUE if is valid
      */
     public static function isValidFileExtension($ext)
     {
@@ -57,7 +61,7 @@ trait FileKit
     }
 
     /**
-     * Set a new file extension
+     * Set a new file extension.
      *
      * @param string $ext Set it if is valid
      */
@@ -67,7 +71,7 @@ trait FileKit
     }
 
     /**
-     * Get current file extension
+     * Get current file extension.
      *
      * @return string File extension
      */
@@ -76,6 +80,3 @@ trait FileKit
         return self::$ext;
     }
 }
-
-/* End of file File_Component.php */
-/* Location: ./application/libraries/Attire/src/File_Component.php */

@@ -1,6 +1,6 @@
 <?php
 namespace Attire\Exceptions;
 
-class Theme extends \Exception
+class Library extends \Exception
 {
 }

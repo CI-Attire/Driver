@@ -1,66 +1,71 @@
 <?php
+
 namespace Attire;
 
+use Attire\Exceptions\Manager as ManagerException;
+
 /**
- * CodeIgniter
+ * CodeIgniter.
  *
  * An open source application development framework for PHP
  *
- * @package   CodeIgniter
  * @author    EllisLab Dev Team
  * @copyright Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
  * @copyright Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
  * @license   http://opensource.org/licenses/MIT	MIT License
- * @link      http://codeigniter.com
+ *
+ * @see      http://codeigniter.com
  * @since     Version 1.0.0
  */
 
-use \Attire\Exceptions\Manager as ManagerException;
-
 /**
- * Attire AssetManager
+ * Attire AssetManager.
  *
- * @package    CodeIgniter
  * @category   Driver
+ *
  * @author     David Sosa Valdes
- * @link       https://github.com/CI-Attire/Driver
+ *
+ * @see       https://github.com/CI-Attire/Driver
  */
-class AssetManager extends \Twig_Extension
+class AssetManager extends \Twig_Extension implements \Twig_Extension_GlobalsInterface
 {
     use Traits\FileKit;
     use Traits\Extractor;
 
     /**
-     * Asset Manifest is a set of indexed assets
+     * Asset Manifest is a set of indexed assets.
+     *
      * @var array
      */
     private static $manifest = [];
 
     /**
-     * Namespace path
+     * Namespace path.
+     *
      * @var null|string
      */
     private static $namespace = null;
 
     /**
-     * Autoload Assets
+     * Autoload Assets.
+     *
      * @var array
      */
     private static $autoload = [];
 
     /**
-     * Throw Error Flag
-     * @var boolean
+     * Throw Error Flag.
+     *
+     * @var bool
      */
-    private static $throw_error = TRUE;
+    private static $throw_error = true;
 
     /**
-     * Class constructor
+     * Class constructor.
      *
      * @param array $options Class arguments ('namespace, manifest, autoload')
-     * @return void
      */
-    public function __construct(array $options = [])
+    public static function initialize(array $options = [])
     {
         extract(self::intersect('namespace', 'manifest', 'autoload', $options));
 
@@ -70,10 +75,9 @@ class AssetManager extends \Twig_Extension
     }
 
     /**
-     * Set namespace
+     * Set namespace.
      *
      * @param string $namespace
-     * @return void
      */
     public static function setNamespace($namespace)
     {
@@ -81,10 +85,9 @@ class AssetManager extends \Twig_Extension
     }
 
     /**
-     * Set manifest
+     * Set manifest.
      *
      * @param string|array $manifest Manifest filepath or an array
-     * @return void
      */
     public static function setManifest($manifest)
     {
@@ -96,10 +99,9 @@ class AssetManager extends \Twig_Extension
     }
 
     /**
-     * Set debug flag
+     * Set debug flag.
      *
-     * @param boolean $state Default: TRUE
-     * @return void
+     * @param bool $state Default: TRUE
      */
     public function debug($state = true)
     {
@@ -107,82 +109,93 @@ class AssetManager extends \Twig_Extension
     }
 
     /**
-     * Add an asset to the manager
+     * Add an asset to the manager.
      *
      * @param string      $filePath  Asset file path
      * @param null|string $namespace Extenstion namespace (js, css)
-     * @return void
      */
-    public static function addAsset($filePath, $namespace=NULL)
+    public static function addAsset($filePath, $namespace = null)
     {
-        if (is_null($namespace))
-        {
-          $info = new \SplFileInfo($filePath);
+        if (is_null($namespace)) {
+            $info = new \SplFileInfo($filePath);
 
-          switch ($info->getExtension())
-          {
+            switch ($info->getExtension()) {
             case 'js':
-              $namespace = 'scripts';
-              break;
+                $namespace = 'scripts';
+                break;
             case 'css':
-              $namespace = 'styles';
-              break;
+                $namespace = 'styles';
+                break;
           }
         }
         self::$autoload[$namespace][] = $filePath;
     }
 
     /**
-     * Asset autoloader setter
+     * Asset autoloader setter.
      *
      * @param array $autoload
-     * @return void
      */
-    public function setAutoload(array $autoload)
+    public static function setAutoload(array $autoload)
     {
         self::$autoload = $autoload;
     }
 
     /**
-     * Get the autoloader
+     * Get the autoloader.
      *
      * @return array
      */
-    public function getAutoload()
+    public static function getAutoload()
     {
         return self::$autoload;
     }
 
     /**
-     * Get the manager functions
+     * Get the manag globals.
+     *
+     * @return array
+     */
+    public function getGlobals()
+    {
+        return [
+            'assets' => self::$autoload,
+        ];
+    }
+
+    /**
+     * Get the manager functions.
      *
      * @return array
      */
     public function getFunctions()
     {
         return [
-          /**
-           * Get the asset version based on the manifest filename
-           *
-           * @param string $filename
-           * @return string Filename path (versioned)
-           */
-          new \Twig_SimpleFunction('attire', function ($filename) {
-              $fileExists = isset(self::$manifest[$filename]);
+            /*
+             * Attire
+             *
+             * Get the asset version based on the manifest filename
+             *
+             * @param string $filename
+             *
+             * @return string Filename path (versioned)
+             */
+            new \Twig_SimpleFunction('attire', function ($filename) {
+                $fileExists = isset(self::$manifest[$filename]);
 
-              if (self::$throw_error && (! $fileExists)) {
-                  throw new ManagerException(sprintf(
-                    'Error Processing the Asset: %s',
-                    $filename
-                  ));
-              }
-              return self::rtrim(sprintf(
-                '%s/%s',
-                self::$namespace,
-                ($fileExists? self::$manifest[$filename] : $filename)
-              ));
-            }
-          )
+                if (self::$throw_error && (!$fileExists)) {
+                    throw new ManagerException(sprintf(
+                        'Error Processing the Asset: %s',
+                        $filename
+                    ));
+                }
+
+                return self::rtrim(sprintf(
+                    '%s/%s',
+                    self::$namespace,
+                    ($fileExists ? self::$manifest[$filename] : $filename)
+                ));
+            }),
         ];
     }
 }

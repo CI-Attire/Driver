@@ -1,42 +1,43 @@
 <?php
+
 namespace Attire;
 
 /**
- * CodeIgniter
+ * CodeIgniter.
  *
  * An open source application development framework for PHP
  *
- * @package   CodeIgniter
  * @author    EllisLab Dev Team
  * @copyright Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
  * @copyright Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
  * @license   http://opensource.org/licenses/MIT	MIT License
- * @link      http://codeigniter.com
+ *
+ * @see       http://codeigniter.com
  * @since     Version 1.0.0
  */
 
- /**
+/**
  * Class that storages all the rendered views.
  *
- * @package    CodeIgniter
- * @category   Driver
- * @author     David Sosa Valdes
- * @link       https://github.com/CI-Attire/Driver
+ * @category  Driver
+ *
+ * @author    David Sosa Valdes
+ *
+ * @see       https://github.com/CI-Attire/Driver
  */
 class Views
 {
     use Traits\FileKit;
 
     /**
-     * Set of views stored
+     * Set of views stored.
+     *
      * @var array
      */
     private $store = [];
 
     /**
-     * Class constructor
-     *
-     * @return void
+     * Class constructor.
      */
     public function __construct()
     {
@@ -44,7 +45,7 @@ class Views
     }
 
     /**
-     * Get stored views
+     * Get stored views.
      *
      * @return array Set of stored views with their respective params
      */
@@ -54,40 +55,67 @@ class Views
     }
 
     /**
-     * Add a view
+     * Add a view.
      *
      * @param string $view   View filename
      * @param array  $params View parameters
+     *
      * @return self
      */
     public function add($view, array $params = [])
     {
-        (! self::haveExtension($view)) && $view.= $this->getFileExtension();
+        if (!self::haveExtension($view)) {
+            $view .= $this->getFileExtension();
+        }
+
         $this->store[$view] = $params;
+
         return $this;
     }
 
     /**
-     * Remove specific view
+     * Parse a view with Attire preferences.
      *
      * @param string $view View filename
+     *
+     * @return string
+     */
+    public function parse($view)
+    {
+        if (!self::haveExtension($view)) {
+            $view .= $this->getFileExtension();
+        }
+
+        return $view;
+    }
+
+    /**
+     * Remove specific view.
+     *
+     * @param string $view View filename
+     *
      * @return self
      */
     public function remove($view)
     {
-        (! $this->haveExtension($view)) && $view.= $this->getFileExtension();
+        if (!$this->haveExtension($view)) {
+            $view .= $this->getFileExtension();
+        }
+
         unset($this->store[$view]);
+
         return $this;
     }
 
     /**
-     * Clear all the stored views
+     * Clear all the stored views.
      *
      * @return self
      */
     public function reset()
     {
         $this->store = [];
+
         return $this;
     }
 }
