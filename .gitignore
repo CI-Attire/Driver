@@ -8,5 +8,4 @@
 /vendor/
 /tests/integration/*
 /node_modules/
-composer.lock
 .DS_Store
