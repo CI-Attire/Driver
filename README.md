@@ -1,5 +1,7 @@
 <!-- **Documentation for Attire is available at [http://davidsosavaldes.github.io/Attire/](<!--http://davidsosavaldes.github.io/Attire/).** -->
 
+[![Latest Stable Version](https://poser.pugx.org/attire/driver/v/stable?format=flat-square)](https://packagist.org/packages/attire/driver) [![Total Downloads](https://poser.pugx.org/attire/driver/downloads?format=flat-square)](https://packagist.org/packages/attire/driver) [![Latest Unstable Version](https://poser.pugx.org/attire/driver/v/unstable?format=flat-square)](https://packagist.org/packages/attire/driver) [![License](https://poser.pugx.org/attire/driver/license?format=flat-square)](https://packagist.org/packages/attire/driver) [![composer.lock](https://poser.pugx.org/attire/driver/composerlock?format=flat-square)](https://packagist.org/packages/attire/driver)
+
 # Attire
 
 Attire Driver supports template inheritance using **Twig** template engine in CodeIgniter.
