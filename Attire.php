@@ -140,9 +140,9 @@ class Attire
             // Set the debug extension if debug is enabled
             $this->debug && $this->environment->addExtension(new \Twig_Extension_Debug());
             // Set the asset manager
-            $this->environment->addExtension(new AssetManager());
+            $this->environment->addExtension(new AssetManager);
             // Set the extension manager
-            $this->environment->addExtension(new ExtensionManager());
+            $this->environment->addExtension(new ExtensionManager);
             // Store the views
             foreach ((array) $views as $key => $value) {
                 if (is_string($key)) {
@@ -154,7 +154,7 @@ class Attire
             $themeName = $this->theme->getName();
             $themePath = $this->theme->getPath();
             $namespace = $this->theme->getNamespace();
-            $template = $this->theme->getTemplate();
+            $template  = $this->theme->getTemplate();
             // @attire template path
             $this->loader->addPath($this->theme->getMainThemePath(), $themeName);
             // @theme themplate path

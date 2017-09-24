@@ -25,7 +25,7 @@ namespace Attire;
  *
  * @see       https://github.com/CI-Attire/Driver
  */
-class ExtensionManager extends \Twig_Extension
+class ExtensionManager extends \Twig_Extension implements \Twig_Extension_GlobalsInterface
 {
     /**
      * Global functions.

@@ -27,7 +27,7 @@ use Attire\Exceptions\Manager as ManagerException;
  *
  * @see       https://github.com/CI-Attire/Driver
  */
-class AssetManager extends \Twig_Extension
+class AssetManager extends \Twig_Extension implements \Twig_Extension_GlobalsInterface
 {
     use Traits\FileKit;
     use Traits\Extractor;
@@ -103,7 +103,7 @@ class AssetManager extends \Twig_Extension
      *
      * @param bool $state Default: TRUE
      */
-    public function debug($state = true)
+    public function debug(bool $state = true)
     {
         self::$throw_error = $state;
     }
@@ -117,16 +117,7 @@ class AssetManager extends \Twig_Extension
     public static function addAsset($filePath, $namespace = null)
     {
         if (is_null($namespace)) {
-            $info = new \SplFileInfo($filePath);
-
-            switch ($info->getExtension()) {
-            case 'js':
-                $namespace = 'scripts';
-                break;
-            case 'css':
-                $namespace = 'styles';
-                break;
-          }
+            $namespace = $this->getFileNamespace($filePath);
         }
         self::$autoload[$namespace][] = $filePath;
     }
@@ -158,9 +149,36 @@ class AssetManager extends \Twig_Extension
      */
     public function getGlobals()
     {
-        return [
-            'assets' => self::$autoload,
-        ];
+        $assets = [];
+        foreach (self::$autoload as $key => $asset) {
+            if ($namespace = $this->getFileNamespace($asset)) {
+                $assets[$namespace][] = $asset;
+            } else {
+                throw new ManagerException(sprintf(
+                    'Error processing the style namespace of: %s',
+                    $asset
+                ));
+            }
+        }
+        return ['assets' => $assets];
+    }
+
+    /**
+     * Get the namespace of one file
+     *
+     * @param  string  $filePath  Asset file path
+     * @return string             File extension
+     */
+    private function getFileNamespace($filePath)
+    {
+        switch ((new \SplFileInfo($filePath))->getExtension())
+        {
+            case 'js':
+                return 'scripts';
+            case 'css':
+                return 'styles';
+        }
+        return false;
     }
 
     /**
@@ -181,20 +199,22 @@ class AssetManager extends \Twig_Extension
              * @return string Filename path (versioned)
              */
             new \Twig_SimpleFunction('attire', function ($filename) {
-                $fileExists = isset(self::$manifest[$filename]);
-
-                if (self::$throw_error && (!$fileExists)) {
-                    throw new ManagerException(sprintf(
-                        'Error Processing the Asset: %s',
-                        $filename
-                    ));
-                }
-
-                return self::rtrim(sprintf(
-                    '%s/%s',
-                    self::$namespace,
-                    ($fileExists ? self::$manifest[$filename] : $filename)
+                $fileInManifest = isset(self::$manifest[$filename]);
+                $file = self::rtrim(sprintf('%s/%s',
+                    self::$namespace, $fileInManifest
+                        ? self::$manifest[$filename]
+                        : $filename
                 ));
+
+                if (self::$throw_error) {
+                    if (! ($fileInManifest && file_exists($file))) {
+                        throw new ManagerException(sprintf(
+                            'Error Processing the Asset: %s',
+                            $file
+                        ));
+                    }
+                }
+                return $file;
             }),
         ];
     }

@@ -83,9 +83,7 @@ $config['theme'] = [
 |
 |		# autoload
 |		$config['assets']['autoload'] = [
-|			'scripts' => [
-|				'js/foo.js'
-|			]
+|			'js/foo.js'
 |		];
 |
 | 	# manifest as array
@@ -166,7 +164,9 @@ $config['functions'] = [];
 |	{{ some }}
 |
 */
-$config['globals'] = [];
+$config['globals'] = [
+    'foo' => 'var'
+];
 
 
 /*
