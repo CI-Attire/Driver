@@ -11,7 +11,7 @@ $iterator = Finder::create()
     ->exclude('tests')
     ->exclude('api')
     ->exclude('vendor')
-    ->in($dir = __DIR__.'/../')
+    ->in($dir = __DIR__)
 ;
 
 // Version collection
@@ -23,8 +23,8 @@ $versions = GitVersionCollection::create($dir)
 return new Sami($iterator, array(
     'versions'             => $versions,
     'title'                => 'Attire API',
-    'build_dir'            => __DIR__.'/build/%version%',
-    'cache_dir'            => __DIR__.'/cache/%version%',
+    'build_dir'            => $dir.'/api/build/%version%',
+    'cache_dir'            => $dir.'/api/cache/%version%',
     'remote_repository'    => new GitHubRemoteRepository('CI-Attire/Driver', $dir),
     'default_opened_level' => 1,
 ));
