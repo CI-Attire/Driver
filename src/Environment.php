@@ -17,7 +17,7 @@ namespace Attire;
  */
 
 /**
- * Attire Environment class.
+ * Attire Environment Class
  *
  * @category  Driver
  *

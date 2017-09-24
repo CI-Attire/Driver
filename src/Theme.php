@@ -19,7 +19,7 @@ use Attire\Exceptions\Theme as ThemeException;
  */
 
 /**
- * Attire Theme class.
+ * Attire Theme Class
  *
  * @category  Driver
  *

@@ -17,7 +17,7 @@ namespace Attire;
  */
 
 /**
- * Attire Extension Manager class.
+ * Attire Extension Manager Class
  *
  * @category  Driver
  *

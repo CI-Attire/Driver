@@ -17,7 +17,7 @@ namespace Attire;
  */
 
 /**
- * Attire Lexer class.
+ * Attire Lexer Class
  *
  * @category   Driver
  *

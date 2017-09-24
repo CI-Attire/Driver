@@ -3,7 +3,7 @@
 namespace Attire\Traits;
 
 /**
- * Filekit.
+ * Attire Filekit Trait
  *
  * Used to define the file relative paths and extensions
  *

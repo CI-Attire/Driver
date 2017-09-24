@@ -19,7 +19,7 @@ use Attire\Exceptions\Manager as ManagerException;
  */
 
 /**
- * Attire AssetManager.
+ * Attire Asset Manager Class
  *
  * @category   Driver
  *

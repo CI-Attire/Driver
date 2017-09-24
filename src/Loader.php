@@ -17,7 +17,7 @@ namespace Attire;
  */
 
 /**
- * Attire Loader class.
+ * Attire Loader Class
  *
  * @category  Driver
  *

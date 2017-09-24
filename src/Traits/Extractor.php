@@ -3,6 +3,8 @@
 namespace Attire\Traits;
 
 /**
+ * Attire Extractor Trait
+ *
  * Parameter Extractor.
  *
  * @category   Traits

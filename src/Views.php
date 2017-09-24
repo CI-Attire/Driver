@@ -17,7 +17,7 @@ namespace Attire;
  */
 
 /**
- * Class that storages all the rendered views.
+ * Attire Views Class
  *
  * @category  Driver
  *
