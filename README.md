@@ -6,7 +6,7 @@
 
 Attire Driver supports template inheritance using **Twig** template engine in CodeIgniter.
 
-[API Documentation](https://ci-attire.github.io/api/build/master/)
+[API Documentation](https://ci-attire.github.io/Driver/api/build/master/)
 
 <!--
 ## Tests
