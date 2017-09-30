@@ -164,9 +164,7 @@ $config['functions'] = [];
 |	{{ some }}
 |
 */
-$config['globals'] = [
-    'foo' => 'var'
-];
+$config['globals'] = [];
 
 
 /*
