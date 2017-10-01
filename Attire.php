@@ -145,19 +145,23 @@ class Attire
             // load the template
             $environment = $this->environment->loadTheme($this->theme, $views);
             // render the output
-            $output = $environment->render(array_merge([
-                'theme' => [
-                    'name'      => $themeName,
-                    'path'      => $themePath,
-                    'views'     => $this->views->getStored(),
-                    'namespace' => $namespace,
-                    'template'  => $template,
-                ],
-            ], $params));
+            $output = $environment->render(
+                array_merge([
+                        'theme' => [
+                            'name'      => $themeName,
+                            'path'      => $themePath,
+                            'views'     => $this->views->getStored(),
+                            'namespace' => $namespace,
+                            'template'  => $template,
+                        ],
+                    ],
+                    $params
+                )
+            );
             $this->CI->benchmark->mark('Attire Render Time_end');
             return $this->CI->output->set_output($output);
         }
-        catch ( ParseError | Exception $e) {
+        catch (ParseError | Exception $e) {
             $this->show_error($e);
         }
     }
