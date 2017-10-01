@@ -56,11 +56,6 @@ class Attire
     protected $environment;
 
     /**
-     * @var \Attire\Lexer
-     */
-    protected $lexer;
-
-    /**
      * @var \Attire\Theme
      */
     protected $theme;
@@ -78,40 +73,24 @@ class Attire
     private $debug;
 
     /**
-     * Config variables.
-     *
-     * @var array
-     */
-    const CONFIG = [
-        'debug',
-        'environment',
-        'loader',
-        'theme',
-        'assets',
-        'lexer',
-        'functions',
-        'globals',
-        'filters',
-    ];
-
-    /**
      * Class constructor.
      *
      * @param array $options Library params
      */
     public function __construct(array $options = [])
     {
-        $this->CI = &get_instance();
         try {
-            if (self::CONFIG !== array_keys($options)) {
-                throw new LibraryException('Config is not proper configured');
-            }
-            $this->debug = $options['debug'] ?? false;
+            $this->CI = &get_instance();
+            $this->debug = (bool) $options['debug'];
             $this->loader = new Loader($options['loader']);
-            $this->environment = new Environment($this->loader, $options['environment']);
-            $this->lexer = new Lexer($this->environment, $options['lexer']);
+            $this->environment = new Environment($this->loader, array_merge(
+                $options['environment'],
+                ['debug' => $this->debug ]
+            ));
             $this->theme = new Theme($options['theme']);
-            $this->views = new Views();
+            $this->views = new Views;
+            // Initialize the Lexer
+            Lexer::initialize($this->environment, $options['lexer']);
             // Initialize the AssetManager
             AssetManager::initialize($options['assets']);
             // Initialize the ExtensionManager
@@ -120,7 +99,8 @@ class Attire
                 'filters' => $options['filters'],
                 'globals' => $options['globals'],
             ]);
-        } catch (Exception $e) {
+        }
+        catch (Exception | TypeError $e) {
             $this->show_error($e);
         }
     }
@@ -128,8 +108,8 @@ class Attire
     /**
      * Render a template.
      *
-     * @param mixed[] $views  a view or an array of views with parameters passed to the template
-     * @param array   $params a set of parameters passed to the views
+     * @param string|array $views  View or a set of views with parameters passed to the template
+     * @param array        $params Set of parameters passed to the views
      *
      * @return string the output as string
      */
@@ -138,7 +118,9 @@ class Attire
         try {
             $this->CI->benchmark->mark('Attire Render Time_start');
             // Set the debug extension if debug is enabled
-            $this->debug && $this->environment->addExtension(new \Twig_Extension_Debug());
+            if ($this->debug) {
+                $this->environment->addExtension(new \Twig_Extension_Debug);
+            }
             // Set the asset manager
             $this->environment->addExtension(new AssetManager);
             // Set the extension manager
@@ -159,27 +141,23 @@ class Attire
             $this->loader->addPath($this->theme->getMainThemePath(), $themeName);
             // @theme themplate path
             $this->loader->addPath($themePath, $namespace);
+            $this->environment->setValidLexer(new Lexer);
             // load the template
-            $environment = $this->environment->loadTemplate((
-                !($this->theme->isDisabled() && is_string($views))
-                    ? sprintf('@%s/%s', $namespace, $template)
-                    : $this->views->parse($views)
-            ));
+            $environment = $this->environment->loadTheme($this->theme, $views);
             // render the output
             $output = $environment->render(array_merge([
                 'theme' => [
-                    'name' => $themeName,
-                    'path' => $themePath,
+                    'name'      => $themeName,
+                    'path'      => $themePath,
+                    'views'     => $this->views->getStored(),
                     'namespace' => $namespace,
-                    'template' => $template,
-                    'views' => $this->views->getStored(),
+                    'template'  => $template,
                 ],
             ], $params));
-
             $this->CI->benchmark->mark('Attire Render Time_end');
-
-            return $this->CI->output->set_output($output)->get_output();
-        } catch (\Exception $e) {
+            return $this->CI->output->set_output($output);
+        }
+        catch ( ParseError | Exception $e) {
             $this->show_error($e);
         }
     }
@@ -189,16 +167,16 @@ class Attire
      *
      * @param \Error $e
      */
-    private function show_error(\Exception $e)
+    private function show_error($e)
     {
+        $whoops = new \Whoops\Run();
         if (is_cli()) {
-            throw $e;
+            $whoops->pushHandler(new \Whoops\Handler\PlainTextHandler);
         } else {
-            $whoops = new \Whoops\Run();
-            $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler());
-            $whoops->handleException($e);
-            $whoops->register();
-            exit;
+            $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
         }
+        $whoops->handleException($e);
+        $whoops->register();
+        exit();
     }
 }

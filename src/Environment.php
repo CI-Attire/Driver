@@ -2,6 +2,12 @@
 
 namespace Attire;
 
+use Attire\Lexer;
+use Attire\Theme;
+use Attire\Views;
+
+use Attire\Exceptions\Environment as EnvironmentException;
+
 /**
  * CodeIgniter.
  *
@@ -39,5 +45,27 @@ class Environment extends \Twig_Environment
     public function __construct(Loader $loader, array $options = [])
     {
         parent::__construct($loader, $options);
+    }
+
+    /**
+     * Class constructor.
+     *
+     * @param \Attire\Lexer $lexer
+     */
+    public function setValidLexer(Lexer $lexer)
+    {
+        if (! $lexer->isValid()) {
+            throw new EnvironmentException('Lexer is not Valid');
+        }
+        parent::setLexer($lexer);
+    }
+
+    public function loadTheme(Theme $theme, $views)
+    {
+        return parent::loadTemplate((
+            ! ($theme->isDisabled() && is_string($views))
+                ? sprintf('@%s/%s', $theme->getNamespace(), $theme->getTemplate())
+                : Views::parse($views)
+        ));
     }
 }

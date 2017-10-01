@@ -8,7 +8,7 @@
 | Enable debug mode.
 |
 */
-$config['debug'] = false;
+$config['debug'] = true;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,8 +32,7 @@ $config['environment'] = [
     'cache' => false,
     'auto_reload' => false,
     'strict_variables' => false,
-    'autoescape' => 'html',
-    'debug' => $config['debug'] ?? false
+    'autoescape' => 'html'
 ];
 
 /*
@@ -107,14 +106,19 @@ $config['assets'] = [];
 | Check the twig syntax settings:
 | 	http://twig.sensiolabs.org/doc/recipes.html#customizing-the-syntax
 |
-| $lexer = [
+| $config['lexer'] = [
 |    'tag_comment'   => array('{#', '#}'),
 |    'tag_block'     => array('{%', '%}'),
 |    'tag_variable'  => array('{{', '}}'),
 |    'interpolation' => array('#{', '}'),
 | ];
 */
-$config['lexer'] = null;
+$config['lexer'] = [
+   'tag_comment'   => array('{#', '#}'),
+   'tag_block'     => array('{%', '%}'),
+   'tag_variable'  => array('{{', '}}'),
+   'interpolation' => array('#{', '}'),
+];
 
 /*
 |--------------------------------------------------------------------------
@@ -164,9 +168,7 @@ $config['functions'] = [];
 |	{{ some }}
 |
 */
-$config['globals'] = [
-    'foo' => 'var'
-];
+$config['globals'] = [];
 
 
 /*

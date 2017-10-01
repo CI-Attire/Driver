@@ -80,7 +80,7 @@ class Views
      *
      * @return string
      */
-    public function parse($view)
+    public static function parse($view)
     {
         if (!self::haveExtension($view)) {
             $view .= $this->getFileExtension();
