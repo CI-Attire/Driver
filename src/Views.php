@@ -82,8 +82,8 @@ class Views
      */
     public static function parse($view)
     {
-        if (!self::haveExtension($view)) {
-            $view .= $this->getFileExtension();
+        if (! self::haveExtension($view)) {
+            $view .= self::getFileExtension();
         }
 
         return $view;
