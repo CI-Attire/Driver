@@ -86,18 +86,6 @@ CSS, Javascript and View files that correlate to it and this structure is
 conected with the Twig Engine.</p>                    </div>
     
     
-            <h2>Constants</h2>
-
-            <table class="table table-condensed">
-                    <tr>
-                <td>CONFIG</td>
-                <td class="last">
-                    <p><em>Config variables.</em></p>
-                    <p></p>
-                </td>
-            </tr>
-            </table>
-
     
             <h2>Properties</h2>
 
@@ -115,14 +103,6 @@ conected with the Twig Engine.</p>                    </div>
                                         protected                                        <a href="Attire/Environment.html"><abbr title="Attire\Environment">Environment</abbr></a>
                 </td>
                 <td>$environment</td>
-                <td class="last"></td>
-                <td></td>
-            </tr>
-                    <tr>
-                <td class="type" id="property_lexer">
-                                        protected                                        <a href="Attire/Lexer.html"><abbr title="Attire\Lexer">Lexer</abbr></a>
-                </td>
-                <td>$lexer</td>
                 <td class="last"></td>
                 <td></td>
             </tr>
@@ -163,7 +143,7 @@ conected with the Twig Engine.</p>                    </div>
                     string
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_render">render</a>(mixed[] $views = null, array $params = [])
+                    <a href="#method_render">render</a>(string|array $views = null, array $params = [])
         
                                             <p>Render a template.</p>                </div>
                 <div class="col-md-2"></div>
@@ -176,7 +156,7 @@ conected with the Twig Engine.</p>                    </div>
             <div id="method-details">
                     <div class="method-item">
                     <h3 id="method___construct">
-        <div class="location">at         <a href="https://github.com/CI-Attire/Driver/blob/master/Attire.php#L102">line 102</a></div>
+        <div class="location">at         <a href="https://github.com/CI-Attire/Driver/blob/master/Attire.php#L80">line 80</a></div>
         <code>                    
     <strong>__construct</strong>(array $options = [])
         </code>
@@ -207,9 +187,9 @@ conected with the Twig Engine.</p>                    </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_render">
-        <div class="location">at         <a href="https://github.com/CI-Attire/Driver/blob/master/Attire.php#L136">line 136</a></div>
+        <div class="location">at         <a href="https://github.com/CI-Attire/Driver/blob/master/Attire.php#L116">line 116</a></div>
         <code>                    string
-    <strong>render</strong>(mixed[] $views = null, array $params = [])
+    <strong>render</strong>(string|array $views = null, array $params = [])
         </code>
     </h3>
     <div class="details">
@@ -223,14 +203,14 @@ conected with the Twig Engine.</p>                    </div>
 
                     <table class="table table-condensed">
                     <tr>
-                <td>mixed[]</td>
+                <td>string|array</td>
                 <td>$views</td>
-                <td>a view or an array of views with parameters passed to the template</td>
+                <td>View or a set of views with parameters passed to the template</td>
             </tr>
                     <tr>
                 <td>array</td>
                 <td>$params</td>
-                <td>a set of parameters passed to the views</td>
+                <td>Set of parameters passed to the views</td>
             </tr>
             </table>
 
