@@ -111,15 +111,11 @@ class AssetManager extends \Twig_Extension implements \Twig_Extension_GlobalsInt
     /**
      * Add an asset to the manager.
      *
-     * @param string      $filePath  Asset file path
-     * @param null|string $namespace Extenstion namespace (js, css)
+     * @param string  $filePath  Asset file path
      */
-    public static function addAsset($filePath, $namespace = null)
+    public static function addAsset($filePath)
     {
-        if (is_null($namespace)) {
-            $namespace = $this->getFileNamespace($filePath);
-        }
-        self::$autoload[$namespace][] = $filePath;
+        self::$autoload[] = $filePath;
     }
 
     /**
@@ -169,7 +165,7 @@ class AssetManager extends \Twig_Extension implements \Twig_Extension_GlobalsInt
      * @param  string  $filePath  Asset file path
      * @return string             File extension
      */
-    private function getFileNamespace($filePath)
+    private static function getFileNamespace($filePath)
     {
         switch ((new \SplFileInfo($filePath))->getExtension())
         {
@@ -207,7 +203,7 @@ class AssetManager extends \Twig_Extension implements \Twig_Extension_GlobalsInt
                 ));
 
                 if (self::$throw_error) {
-                    if (! ($fileInManifest && file_exists($file))) {
+                    if (! ($fileInManifest && file_exists(FCPATH.$file))) {
                         throw new ManagerException(sprintf(
                             'Error Processing the Asset: %s',
                             $file
